@@ -58,7 +58,8 @@ pipeline {
     stage('Publish Image') {
       steps {
         script {
-          sh 'sudo docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${getPackageReleaseVersion()} .'
+          def version = getPackageReleaseVersion()
+          sh 'sudo docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${version} .'
         }
       }
     }
