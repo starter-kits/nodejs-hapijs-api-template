@@ -55,6 +55,13 @@ pipeline {
         }
       }
     }
+    stage('Publish Image') {
+      steps {
+        script {
+          sh 'sudo docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${getPackageReleaseVersion()} .'
+        }
+      }
+    }
   }
   post { 
     always { 
@@ -122,4 +129,9 @@ def publishUnitTestCoverageCoberturaReports(reportPathPattern = '**/reports/test
     onlyStable: false,
     sourceEncoding: 'ASCII',
     zoomCoverageChart: false
+}
+
+def getPackageReleaseVersion() {
+  def packageJson = readJSON file: 'package.json'
+  packageJson.version
 }
