@@ -59,7 +59,10 @@ pipeline {
       steps {
         script {
           def version = getPackageReleaseVersion()
-          sh 'sudo docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${version} .'
+          sh '''
+          sudo docker build -t ${IMAGE_NAME}:latest .
+          sudo docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${version}
+          '''
         }
       }
     }
