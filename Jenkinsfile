@@ -58,10 +58,10 @@ pipeline {
     stage('Publish Image') {
       steps {
         script {
-          def version = getPackageReleaseVersion()
+          env.PACKAGE_ARTIFACT_RELEASE_VERSION = getPackageReleaseVersion()
           sh '''
           sudo docker build -t ${IMAGE_NAME}:latest .
-          sudo docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${version}
+          sudo docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${PACKAGE_ARTIFACT_RELEASE_VERSION}
           '''
         }
       }
