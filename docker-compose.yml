@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  nodejs-hapijs-api-template:
+    build:
+      context: .
+      target: dev_build
+      dockerfile: Dockerfile
+    environment:
+     - NODE_ENV=development
+    expose:
+      - "3000"
+    user: node
+    command:
+      # Make sure `package-lock.json` is available in host before start node app in local dev
+      "/bin/sh -c 'cp ./.tmp/package-lock.json ./package-lock.json && nodemon .'"
+    volumes:
+      # Make sure no `node_modules` directory mounted from host to guest
+      - /opt/app/node_modules
+      # Make sure no `.tmp` directory mounted from host to guest
+      - /opt/app/.tmp
+      # Share all project files from host to guest except node_modules that defined above lines
+      - ./:/opt/app/
+    ports:
+      - "3000:3000"
