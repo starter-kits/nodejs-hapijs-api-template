@@ -18,7 +18,7 @@ pipeline {
     }
     stage('Install Dependencies') {
       steps {
-        sh 'docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
+        sh 'sudo docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
         echo "Installed dependencies"
       }
     }
@@ -26,7 +26,7 @@ pipeline {
       steps {
         script {
           try {
-            sh 'docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm run lint'  
+            sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm run lint'  
           } catch(e) {
             publishLintResults()
             throw e
@@ -39,9 +39,9 @@ pipeline {
     stage('Test') {
       steps {
         script {
-          sh 'docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
+          sh 'sudo docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
           try {
-            sh 'docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm test'  
+            sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm test'  
           } catch(e) {
             echo "Test failed"
             publishTestResults()
