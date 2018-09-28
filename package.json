@@ -1,25 +1,23 @@
 {
   "name": "nodejs-hapijs-api-template",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Nodejs Hapi.js API Skeleton",
   "main": "src/index.js",
-  "scripts": {
+  "scripts":   {
     "prelint": "mkdir -p build/reports/lint",
     "lint": "node scripts/lint.js",
     "test": "JEST_JUNIT_OUTPUT=build/reports/test/junit.xml jest --config jest.config.js --color --coverage",
     "test:watch": "JEST_JUNIT_OUTPUT=build/reports/test/junit.xml jest --config jest.config.js --color --watch --verbose=false",
     "start": "node ."
   },
-  "engines": {
-    "node": ">=8.11.3"
-  },
+  "engines": {"node": ">=8.11.3"},
   "author": "T Siva",
   "license": "MIT",
-  "dependencies": {
+  "dependencies":   {
     "dotenv": "^6.0.0",
     "hapi": "^17.5.2"
   },
-  "devDependencies": {
+  "devDependencies":   {
     "babel-eslint": "^8.2.6",
     "eslint": "^5.1.0",
     "jest": "^23.4.1",
