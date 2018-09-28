@@ -151,7 +151,6 @@ pipeline {
           }
           steps {
             script {
-              updatePackageJsonWithNewReleaseVersion()
               gitCommitAndTag()
             }
           }
