@@ -416,7 +416,10 @@ def updatePackageJsonWithNewReleaseVersion() {
   def packageJson = readJSON file: 'package.json'
   packageJson.version = releaseVersion
   writeJSON file: 'package.json', json: packageJson, pretty: 2
-  writeJSON file: 'package-lock.json', json: packageJson, pretty: 2
+  def packageLockJson = readJSON file: 'package-lock.json'
+  packageLockJson.version = releaseVersion
+  writeJSON file: 'package-lock.json', json: packageLockJson, pretty: 2
+  
   env.PACKAGE_ARTIFACT_RELEASE_VERSION = releaseVersion
 
   echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
