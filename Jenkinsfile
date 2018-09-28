@@ -92,45 +92,57 @@ pipeline {
             }
           }
         }
-        // stage('Install Dependencies') {
-        //   steps {
-        //     sh 'sudo docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
-        //     echo "Installed dependencies"
-        //   }
-        // }
-        // stage('Lint') {
-        //   steps {
-        //     script {
-        //       try {
-        //         sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm run lint'  
-        //       } catch(e) {
-        //         publishLintResults()
-        //         throw e
-        //       } finally {
-        //         publishLintResults()
-        //       }
-        //     }
-        //   }
-        // }
-        // stage('Test') {
-        //   steps {
-        //     script {
-        //       sh 'sudo docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
-        //       try {
-        //         sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm test'  
-        //       } catch(e) {
-        //         echo "Test failed"
-        //         publishTestResults()
-        //         publishUnitTestCoverageCoberturaReports()
-        //         throw e
-        //       } finally {
-        //         publishTestResults()
-        //         publishUnitTestCoverageCoberturaReports()
-        //       }
-        //       // sh 'docker rmi ${IMAGE_NAME}:dev_build'
-        //     }
-        //   }
-        // }
+        stage('Update Release Version') {
+          when {
+            anyOf {
+              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
+            }
+          }
+          steps {
+            script {
+              updatePackageJsonWithNewReleaseVersion()
+            }
+          }
+        }
+        stage('Install Dependencies') {
+          steps {
+            sh 'sudo docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
+            echo "Installed dependencies"
+          }
+        }
+        stage('Lint') {
+          steps {
+            script {
+              try {
+                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm run lint'  
+              } catch(e) {
+                publishLintResults()
+                throw e
+              } finally {
+                publishLintResults()
+              }
+            }
+          }
+        }
+        stage('Test') {
+          steps {
+            script {
+              sh 'sudo docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
+              try {
+                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm test'  
+              } catch(e) {
+                echo "Test failed"
+                publishTestResults()
+                publishUnitTestCoverageCoberturaReports()
+                throw e
+              } finally {
+                publishTestResults()
+                publishUnitTestCoverageCoberturaReports()
+              }
+              // sh 'docker rmi ${IMAGE_NAME}:dev_build'
+            }
+          }
+        }
         stage('Tag with Release Version') {
           when {
             anyOf {
@@ -385,8 +397,11 @@ def bumpVersionNumberBySemverType(String currentVersion, String releaseVersionTy
 
   if (releaseVersionType == 'MAJOR') {
     major = major.toInteger() + 1
+    minor = 0
+    patch = 0
   } else if (releaseVersionType == 'MINOR') {
     minor = minor.toInteger() + 1
+    patch = 0
   } else if (releaseVersionType == 'PATCH') {
     patch = patch.toInteger() + 1
   }
