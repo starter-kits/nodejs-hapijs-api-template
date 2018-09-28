@@ -92,45 +92,45 @@ pipeline {
             }
           }
         }
-        stage('Install Dependencies') {
-          steps {
-            sh 'sudo docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
-            echo "Installed dependencies"
-          }
-        }
-        stage('Lint') {
-          steps {
-            script {
-              try {
-                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm run lint'  
-              } catch(e) {
-                publishLintResults()
-                throw e
-              } finally {
-                publishLintResults()
-              }
-            }
-          }
-        }
-        stage('Test') {
-          steps {
-            script {
-              sh 'sudo docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
-              try {
-                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm test'  
-              } catch(e) {
-                echo "Test failed"
-                publishTestResults()
-                publishUnitTestCoverageCoberturaReports()
-                throw e
-              } finally {
-                publishTestResults()
-                publishUnitTestCoverageCoberturaReports()
-              }
-              // sh 'docker rmi ${IMAGE_NAME}:dev_build'
-            }
-          }
-        }
+        // stage('Install Dependencies') {
+        //   steps {
+        //     sh 'sudo docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
+        //     echo "Installed dependencies"
+        //   }
+        // }
+        // stage('Lint') {
+        //   steps {
+        //     script {
+        //       try {
+        //         sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm run lint'  
+        //       } catch(e) {
+        //         publishLintResults()
+        //         throw e
+        //       } finally {
+        //         publishLintResults()
+        //       }
+        //     }
+        //   }
+        // }
+        // stage('Test') {
+        //   steps {
+        //     script {
+        //       sh 'sudo docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
+        //       try {
+        //         sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm test'  
+        //       } catch(e) {
+        //         echo "Test failed"
+        //         publishTestResults()
+        //         publishUnitTestCoverageCoberturaReports()
+        //         throw e
+        //       } finally {
+        //         publishTestResults()
+        //         publishUnitTestCoverageCoberturaReports()
+        //       }
+        //       // sh 'docker rmi ${IMAGE_NAME}:dev_build'
+        //     }
+        //   }
+        // }
         stage('Tag with Release Version') {
           when {
             anyOf {
@@ -379,32 +379,31 @@ def chooseAndApproveReleaseArtifactType() {
   echo "PACKAGE_ARTIFACT_NEW_RELEASE_APPROVER: ${env.PACKAGE_ARTIFACT_NEW_RELEASE_APPROVER}"
 }
 
-def getVersionNumberFromSemverType(currentVersion, releaseVersionType) {
-  def versionParts = currentVersion.tokenize('.')
-  echo versionParts
-  if (versionParts.size != 3) {
-      throw new IllegalArgumentException("Wrong version format - expected MAJOR.MINOR.PATCH - got ${version}")
-  }
-  def major = versionParts[0].toInteger()
-  def minor = versionParts[1].toInteger()
-  def patch = versionParts[2].toInteger()
+def bumpVersionNumberBySemverType(String currentVersion, String releaseVersionType) {
+  echo currentVersion
+  def (major, minor, patch) = currentVersion.tokenize('.')
 
   if (releaseVersionType == 'MAJOR') {
-    major = major + 1
+    major = major.toInteger() + 1
   } else if (releaseVersionType == 'MINOR') {
-    minor = minor + 1
+    minor = minor.toInteger() + 1
   } else if (releaseVersionType == 'PATCH') {
-    patch = patch + 1
+    patch = patch.toInteger() + 1
   }
 
-  return "${major}.${minor}.${patch}"
+  String releaseVersion = "${major}.${minor}.${patch}"
+  echo "Release Version: ${releaseVersion}"
+  releaseVersion
 }
+
 def updatePackageJsonWithNewReleaseVersion() {
   // Possible values for PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: PATCH, MINOR, MAJOR 
-  env.PACKAGE_ARTIFACT_RELEASE_VERSION = getVersionNumberFromSemverType(env.PACKAGE_ARTIFACT_PREVIOUS_VERSION, env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE)
+  def releaseVersion = bumpVersionNumberBySemverType(env.PACKAGE_ARTIFACT_PREVIOUS_VERSION, env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE)
   def packageJson = readJSON file: 'package.json'
-  packageJson.version = env.PACKAGE_ARTIFACT_RELEASE_VERSION
+  packageJson.version = releaseVersion
   writeJSON file: 'package.json', json: packageJson, pretty: 2
+  writeJSON file: 'package-lock.json', json: packageJson, pretty: 2
+  env.PACKAGE_ARTIFACT_RELEASE_VERSION = releaseVersion
 
   echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
   echo "PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: ${env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE}"
