@@ -417,8 +417,8 @@ def gitCommitAndTag() {
   git config user.name "Jenkins"
   git config user.email "noreply@jenkins"
   git add -u
-  git commit -m "🎉 New release with ${PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE} version increase to ${PACKAGE_ARTIFACT_RELEASE_VERSION}"
-  git tag -a v${PACKAGE_ARTIFACT_RELEASE_VERSION} -m "🎉 New Version ${PACKAGE_ARTIFACT_RELEASE_VERSION}"
+  git commit -m "🎉 Version bumped from ${PACKAGE_ARTIFACT_PREVIOUS_VERSION} to ${PACKAGE_ARTIFACT_RELEASE_VERSION}. ${PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE} Version Release."
+  git tag -a v${PACKAGE_ARTIFACT_RELEASE_VERSION} -m "🎉 ${PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE} Version Release (v${PACKAGE_ARTIFACT_RELEASE_VERSION})"
   '''
   withCredentials([usernamePassword(credentialsId: env.GITHUB_JENKINS_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
     sh '''
