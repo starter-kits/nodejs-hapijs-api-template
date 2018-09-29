@@ -462,7 +462,7 @@ def updateVersionTxtWithNewReleaseVersion() {
 
 def gitCommitAndTag() {
   sh '''
-  git config user.name "Jenkins 🤖"
+  git config user.name "Jenkins"
   git config user.email "noreply@jenkins"
   git add -u
   git commit -m "🎉 Version bumped from ${PACKAGE_ARTIFACT_PREVIOUS_VERSION} to ${PACKAGE_ARTIFACT_RELEASE_VERSION}. ${PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE} Version Release."
@@ -482,7 +482,7 @@ def getLastCommitAuthor() {
 
 def isLastCommitByJenkins() {
   def result = "NO"
-  if (getLastCommitAuthor() == "Jenkins 🤖") {
+  if (getLastCommitAuthor() == "Jenkins") {
     result = "YES"
   }
   result
