@@ -390,26 +390,6 @@ def chooseAndApproveReleaseArtifactType() {
   echo "PACKAGE_ARTIFACT_NEW_RELEASE_APPROVER: ${env.PACKAGE_ARTIFACT_NEW_RELEASE_APPROVER}"
 }
 
-def bumpVersionNumberBySemverType(String currentVersion, String releaseVersionType) {
-  echo currentVersion
-  def (major, minor, patch) = currentVersion.tokenize('.')
-
-  if (releaseVersionType == 'MAJOR') {
-    major = major.toInteger() + 1
-    minor = 0
-    patch = 0
-  } else if (releaseVersionType == 'MINOR') {
-    minor = minor.toInteger() + 1
-    patch = 0
-  } else if (releaseVersionType == 'PATCH') {
-    patch = patch.toInteger() + 1
-  }
-
-  String releaseVersion = "${major}.${minor}.${patch}"
-  echo "Release Version: ${releaseVersion}"
-  releaseVersion
-}
-
 def updatePackageJsonWithNewReleaseVersion() {
   // Possible values for PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: PATCH, MINOR, MAJOR 
   def releaseVersionType = env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE
@@ -418,16 +398,6 @@ def updatePackageJsonWithNewReleaseVersion() {
 
   def packageJson = readJSON file: 'package.json'
   env.PACKAGE_ARTIFACT_RELEASE_VERSION = packageJson.version
-
-  // def releaseVersion = bumpVersionNumberBySemverType(env.PACKAGE_ARTIFACT_PREVIOUS_VERSION, env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE)
-  // def packageJson = readJSON file: 'package.json'
-  // packageJson.version = releaseVersion
-  // writeJSON file: 'package.json', json: packageJson, pretty: 2
-  // def packageLockJson = readJSON file: 'package-lock.json'
-  // packageLockJson.version = releaseVersion
-  // writeJSON file: 'package-lock.json', json: packageLockJson, pretty: 2
-
-  // env.PACKAGE_ARTIFACT_RELEASE_VERSION = releaseVersion
 
   echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
   echo "PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: ${env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE}"
