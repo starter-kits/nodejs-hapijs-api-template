@@ -45,9 +45,7 @@ pipeline {
       }
       steps {
         script {
-          timeout(time: 14, unit: 'DAYS') {
-            chooseArtifactType()
-          }
+          chooseArtifactType()
         }
       }
     }
@@ -73,9 +71,7 @@ pipeline {
       }
       steps {
         script {
-          timeout(time: 14, unit: 'DAYS') {
-            approveNonMasterBranchReleaseArtifact()
-          }
+          approveNonMasterBranchReleaseArtifact()
         }
       }
     }
@@ -85,9 +81,7 @@ pipeline {
       }
       steps {
         script {
-          timeout(time: 14, unit: 'DAYS') {
-            chooseAndApproveReleaseArtifactType()
-          }
+          chooseAndApproveReleaseArtifactType()
         }
       }
     }
