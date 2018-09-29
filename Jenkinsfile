@@ -101,7 +101,7 @@ pipeline {
         }
         stage('Install Dependencies') {
           steps {
-            sh 'sudo docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
+            sh 'sudo docker build -t ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} --target dev_build .'
             echo "Installed dependencies"
           }
         }
@@ -109,7 +109,7 @@ pipeline {
           steps {
             script {
               try {
-                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm run lint'  
+                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm run lint'  
               } catch(e) {
                 publishLintResults()
                 throw e
@@ -122,9 +122,8 @@ pipeline {
         stage('Test') {
           steps {
             script {
-              sh 'sudo docker build -t ${IMAGE_NAME}:dev_build --target dev_build .'
               try {
-                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build npm test'  
+                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm test'  
               } catch(e) {
                 echo "Test failed"
                 publishTestResults()
@@ -157,10 +156,10 @@ pipeline {
           }
           steps {
             script {
-              env.PACKAGE_ARTIFACT_RELEASE_VERSION = getPackageReleaseVersion()
+              createPackageArtifactVersion()
               sh '''
-              sudo docker build -t ${IMAGE_NAME}:latest .
-              sudo docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${PACKAGE_ARTIFACT_RELEASE_VERSION}
+              sudo docker build -t ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION} .
+              # sudo docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION}
               '''
             }
           }
@@ -317,11 +316,6 @@ def publishUnitTestCoverageCoberturaReports(reportPathPattern = '**/reports/test
     zoomCoverageChart: false
 }
 
-def getPackageReleaseVersion() {
-  def packageJson = readJSON file: 'package.json'
-  packageJson.version
-}
-
 def chooseArtifactType() {
   def inputData = input message: 'Select the type of the artifact?',
     parameters: [
@@ -470,4 +464,18 @@ def isLastCommitByJenkins() {
     result = "YES"
   }
   result
+}
+
+def createPackageArtifactVersion() {
+  if ("${PACKAGE_ARTIFACT_TYPE}" == "SNAPSHOT") {
+    def revision = env.PACKAGE_ARTIFACT_GIT_REVISION.take(6)
+    def snapshotVersion = "${PACKAGE_ARTIFACT_GIT_BRANCH}__${revision}"
+    env.PACKAGE_ARTIFACT_VERSION = snapshotVersion
+  } else {
+    env.PACKAGE_ARTIFACT_VERSION = env.PACKAGE_ARTIFACT_RELEASE_VERSION
+  }
+  echo "PACKAGE_ARTIFACT_TYPE: ${env.PACKAGE_ARTIFACT_TYPE}"
+  echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
+  echo "PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: ${env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE}"
+  echo "PACKAGE_ARTIFACT_VERSION: ${env.PACKAGE_ARTIFACT_VERSION}"
 }
