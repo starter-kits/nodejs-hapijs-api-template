@@ -24,6 +24,10 @@ pipeline {
       steps {
         script {
           env.IS_LAST_COMMIT_BY_JENKINS = isLastCommitByJenkins()
+          setEnvVarsFromJSONConfigFile(env.CONFIG_FILE_ID)
+          setEnvironmentVariablesFromDefaultJenkinsEnvVariables()
+          setEnvironmentVariablesFromBuildUserPlugin()
+          setEnvironmentVariablesFromPackageJson()
         }
       }
     }
@@ -93,16 +97,6 @@ pipeline {
     stage('Checkout Source') {
       agent any
       stages {
-        stage('Load Config') {
-          steps {
-            script {
-              setEnvVarsFromJSONConfigFile(env.CONFIG_FILE_ID)
-              setEnvironmentVariablesFromDefaultJenkinsEnvVariables()
-              setEnvironmentVariablesFromBuildUserPlugin()
-              setEnvironmentVariablesFromPackageJson()
-            }
-          }
-        }
         stage('Update Release Version') {
           when {
             anyOf {
@@ -180,7 +174,10 @@ pipeline {
       }
     }
     stage('Deployment') {
-      agent any
+      agent none
+      options {
+        skipDefaultCheckout()
+      }
       stages {
         stage('Deploy to Dev') {
           when {
