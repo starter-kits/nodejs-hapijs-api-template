@@ -449,6 +449,7 @@ def gitCommitAndTagWithReleaseVersion() {
   git config user.email "noreply@jenkins"
   git add -u
   git commit -m "🎉 Version bumped from ${PACKAGE_ARTIFACT_PREVIOUS_VERSION} to ${PACKAGE_ARTIFACT_RELEASE_VERSION}. ${PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE} Version Release."
+  git tag -d $(git tag -l) # Delete all local tags. It would help to remove local tags that never pushed to remote origin due to earlier build failures
   git tag -a v${PACKAGE_ARTIFACT_RELEASE_VERSION} -m "🎉 ${PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE} Version Release (v${PACKAGE_ARTIFACT_RELEASE_VERSION})"
   '''
   withCredentials([usernamePassword(credentialsId: env.GITHUB_JENKINS_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
