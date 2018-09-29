@@ -171,14 +171,14 @@ pipeline {
       options {
         skipDefaultCheckout()
       }
+      when {
+        anyOf {
+          environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'SNAPSHOT'
+          environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
+        }
+      }
       stages {
         stage('Deploy to Dev') {
-          when {
-            anyOf {
-              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'SNAPSHOT'
-              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-            }
-          }
           steps {
             script {
               echo "TODO"
