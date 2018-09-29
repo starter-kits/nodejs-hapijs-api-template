@@ -13,7 +13,7 @@ pipeline {
     GITHUB_JENKINS_CREDENTIALS_ID = '6620095f-430d-5a03-94cf-c5a15dbf0617'
     GITHUB_HTTPS_REPO_URL = 'github.com/starter-kits/nodejs-hapijs-api-template.git' // without `https` prefix
     IMAGE_NAME = 'nodejs-hapijs-api-template'
-    GIT_MAIN_PROTECTED_BRANCH = 'master'
+    GIT_MAIN_PROTECTED_BRANCH = 'jenkins'
   }
   options {
     disableConcurrentBuilds()
