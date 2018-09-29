@@ -469,7 +469,7 @@ def isLastCommitByJenkins() {
 def createPackageArtifactVersion() {
   if ("${PACKAGE_ARTIFACT_TYPE}" == "SNAPSHOT") {
     def revision = env.PACKAGE_ARTIFACT_GIT_REVISION.take(6)
-    def snapshotVersion = "${PACKAGE_ARTIFACT_GIT_BRANCH}__${revision}"
+    def snapshotVersion = "SNAPSHOT_${PACKAGE_ARTIFACT_GIT_BRANCH}__${revision}"
     env.PACKAGE_ARTIFACT_VERSION = snapshotVersion
   } else {
     env.PACKAGE_ARTIFACT_VERSION = env.PACKAGE_ARTIFACT_RELEASE_VERSION
