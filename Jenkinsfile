@@ -412,15 +412,22 @@ def bumpVersionNumberBySemverType(String currentVersion, String releaseVersionTy
 
 def updatePackageJsonWithNewReleaseVersion() {
   // Possible values for PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: PATCH, MINOR, MAJOR 
-  def releaseVersion = bumpVersionNumberBySemverType(env.PACKAGE_ARTIFACT_PREVIOUS_VERSION, env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE)
+  def releaseVersionType = env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE
+  sh 'sudo docker build -t ${IMAGE_NAME}:base --target base .'
+  sh "sudo docker run -v ${env.WORKSPACE}/:/opt/app/ ${env.IMAGE_NAME}:base npm --no-git-tag-version version ${releaseVersionType.toLowerCase()}" 
+
   def packageJson = readJSON file: 'package.json'
-  packageJson.version = releaseVersion
-  writeJSON file: 'package.json', json: packageJson, pretty: 2
-  def packageLockJson = readJSON file: 'package-lock.json'
-  packageLockJson.version = releaseVersion
-  writeJSON file: 'package-lock.json', json: packageLockJson, pretty: 2
-  
-  env.PACKAGE_ARTIFACT_RELEASE_VERSION = releaseVersion
+  env.PACKAGE_ARTIFACT_RELEASE_VERSION = packageJson.version
+
+  // def releaseVersion = bumpVersionNumberBySemverType(env.PACKAGE_ARTIFACT_PREVIOUS_VERSION, env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE)
+  // def packageJson = readJSON file: 'package.json'
+  // packageJson.version = releaseVersion
+  // writeJSON file: 'package.json', json: packageJson, pretty: 2
+  // def packageLockJson = readJSON file: 'package-lock.json'
+  // packageLockJson.version = releaseVersion
+  // writeJSON file: 'package-lock.json', json: packageLockJson, pretty: 2
+
+  // env.PACKAGE_ARTIFACT_RELEASE_VERSION = releaseVersion
 
   echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
   echo "PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: ${env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE}"
