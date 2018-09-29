@@ -19,12 +19,23 @@ pipeline {
     disableConcurrentBuilds()
   }
   stages {
+    stage('Init') {
+      agent any
+      steps {
+        script {
+          env.IS_LAST_COMMIT_BY_JENKINS = isLastCommitByJenkins()
+        }
+      }
+    }
     stage('Choose Artifact Type') {
       agent none
       when {
         anyOf {
           branch env.GIT_MAIN_PROTECTED_BRANCH
           expression { return params.SHOULD_FORCE_PUBLISH_ARTIFACT }
+        }
+        not {
+          environment name: 'IS_LAST_COMMIT_BY_JENKINS', value: 'YES'
         }
       }
       steps {
@@ -406,7 +417,7 @@ def updatePackageJsonWithNewReleaseVersion() {
 
 def gitCommitAndTag() {
   sh '''
-  git config user.name "Jenkins CI"
+  git config user.name "Jenkins"
   git config user.email "noreply@jenkins"
   git add -u
   git commit -m "🎉 New release with ${PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE} version increase to ${PACKAGE_ARTIFACT_RELEASE_VERSION}"
@@ -417,4 +428,17 @@ def gitCommitAndTag() {
     git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${GITHUB_HTTPS_REPO_URL} HEAD:${PACKAGE_ARTIFACT_GIT_BRANCH} --tags
     '''
   }
+}
+
+def getLastCommitAuthor() {
+  def lastCommitAuthor = sh(returnStdout: true, script: "git log -1 --pretty=format:'%an'").trim()
+  lastCommitAuthor
+}
+
+def isLastCommitByJenkins() {
+  def result = "NO"
+  if (getLastCommitAuthor() == "Jenkins") {
+    result = "YES"
+  }
+  result
 }
