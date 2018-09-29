@@ -6,6 +6,7 @@ services:
       context: .
       target: local_dev
       dockerfile: Dockerfile
+    container_name: nodejs-hapijs-api-template-local-dev
     volumes:
       # Make sure no `node_modules` directory mounted from host to guest
       - /opt/app/node_modules
