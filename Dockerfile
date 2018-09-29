@@ -7,26 +7,31 @@ ARG APP_PATH=/opt/app
 WORKDIR ${APP_PATH}
 
 # ----------------------------------------------------------------------------------
-# ---- Production Dependencies with source ----------------------------------------------------------------
-FROM base AS prod_build  
+# ---- Production Dependencies ----------------------------------------------------------------
+FROM base AS prod_dependencies  
 
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 # install app dependencies excluding 'devDependencies'
 RUN npm install --only=production
+
+# ----------------------------------------------------------------------------------
+# ---- Production Dependencies with source ----------------------------------------------------------------
+FROM prod_dependencies AS prod_build  
+
 # .dockerignore files won't be copied
 COPY . .
 
 # ----------------------------------------------------------------------------------
-# ---- Dependencies with source ----------------------------------------------------------------
-FROM base AS dev_build
-ARG APP_PATH=/opt/app
-
-COPY --from=prod_build ${APP_PATH}/node_modules ./
-COPY --from=prod_build ${APP_PATH}/package*.json ./
+# ---- Dependencies  ----------------------------------------------------------------
+FROM prod_dependencies AS dev_dependencies
 
 # install app dependencies including 'devDependencies'
 RUN npm install
+
+# ----------------------------------------------------------------------------------
+# ---- Dependencies with source ----------------------------------------------------------------
+FROM dev_dependencies AS dev_build
 
 # how to share `package-lock.json` from container to host in local development? so it would be available to commit into git repo.
 # for now, keep package-lock.json in `.tmp`. Then copy from  ./.tmp/package-lock.json to ./package-lock.json at docker run time.
