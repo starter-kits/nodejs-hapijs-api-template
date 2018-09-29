@@ -66,9 +66,7 @@ pipeline {
     }
     stage('Approve Non-master branch Release Artifact') {
       when {
-        anyOf {
-          environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-        }
+        environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
         not {
           branch env.GIT_MAIN_PROTECTED_BRANCH
         }
@@ -83,9 +81,7 @@ pipeline {
     }
     stage('Approve Release Artifact Type') {
       when {
-        allOf {
-          environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-        }
+        environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
       }
       steps {
         script {
@@ -100,9 +96,7 @@ pipeline {
       stages {
         stage('Update Release Version') {
           when {
-            anyOf {
-              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-            }
+            environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
           }
           steps {
             script {
@@ -152,9 +146,7 @@ pipeline {
         }
         stage('Tag with Release Version') {
           when {
-            anyOf {
-              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-            }
+            environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
           }
           steps {
             script {
@@ -202,9 +194,7 @@ pipeline {
         }
         stage('Deploy to Stage') {
           when {
-            allOf {
-              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-            }
+            environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
           }
           steps {
             script {
@@ -214,9 +204,7 @@ pipeline {
         }
         stage('Deploy to Prod') {
           when {
-            allOf {
-              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-            }
+            environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
           }
           steps {
             script {
