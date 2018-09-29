@@ -41,7 +41,7 @@ COPY . .
 
 # ----------------------------------------------------------------------------------
 # --- Release for Production -------------------------------------------------------
-FROM base AS prod
+FROM base AS production
 ARG APP_PATH=/opt/app
 ENV NODE_ENV=production
 

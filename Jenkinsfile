@@ -158,7 +158,7 @@ pipeline {
             script {
               createPackageArtifactVersion()
               sh '''
-              sudo docker build -t ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION} --target prod .
+              sudo docker build -t ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION} --target production .
               # sudo docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION}
               '''
             }
