@@ -40,8 +40,6 @@ FROM base AS prod
 ARG APP_PATH=/opt/app
 ENV NODE_ENV=production
 
-WORKDIR ${APP_PATH}
-
 COPY --from=prod_build ${APP_PATH} ./
 
 EXPOSE 3000
@@ -53,8 +51,6 @@ CMD ["node", "."]
 FROM base AS local_dev
 ARG APP_PATH=/opt/app
 ENV NODE_ENV=development
-
-WORKDIR ${APP_PATH}
 
 # install global app dependencies for development
 RUN npm install -g nodemon
