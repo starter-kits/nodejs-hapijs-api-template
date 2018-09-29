@@ -105,8 +105,8 @@ pipeline {
           }
           steps {
             script {
-              updatePackageJsonWithNewReleaseVersion()
-              updateVersionTxtWithNewReleaseVersion()
+              updatePackageJsonWithReleaseVersion()
+              updateVersionTxtWithReleaseVersion()
             }
           }
         }
@@ -157,7 +157,7 @@ pipeline {
           }
           steps {
             script {
-              gitCommitAndTag()
+              gitCommitAndTagWithReleaseVersion()
             }
           }
         }
@@ -413,7 +413,7 @@ def chooseAndApproveReleaseArtifactType() {
   echo "PACKAGE_ARTIFACT_NEW_RELEASE_APPROVER: ${env.PACKAGE_ARTIFACT_NEW_RELEASE_APPROVER}"
 }
 
-def updatePackageJsonWithNewReleaseVersion() {
+def updatePackageJsonWithReleaseVersion() {
   // Possible values for PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: PATCH, MINOR, MAJOR 
   def releaseVersionType = env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE
   sh 'sudo docker build -t ${IMAGE_NAME}:base --target base .'
@@ -447,7 +447,7 @@ def bumpVersionNumberBySemverType(String currentVersion, String releaseVersionTy
   releaseVersion
 }
 
-def updateVersionTxtWithNewReleaseVersion() {
+def updateVersionTxtWithReleaseVersion() {
   // Possible values for PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: PATCH, MINOR, MAJOR 
   def releaseVersion = bumpVersionNumberBySemverType(env.PACKAGE_ARTIFACT_PREVIOUS_VERSION, env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE)
   
@@ -460,7 +460,7 @@ def updateVersionTxtWithNewReleaseVersion() {
   echo "PACKAGE_ARTIFACT_RELEASE_VERSION: ${env.PACKAGE_ARTIFACT_RELEASE_VERSION}"
 }
 
-def gitCommitAndTag() {
+def gitCommitAndTagWithReleaseVersion() {
   sh '''
   git config user.name "Jenkins"
   git config user.email "noreply@jenkins"
