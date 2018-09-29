@@ -106,6 +106,7 @@ pipeline {
           steps {
             script {
               updatePackageJsonWithNewReleaseVersion()
+              updateVersionTxtWithNewReleaseVersion()
             }
           }
         }
@@ -302,6 +303,14 @@ def setEnvironmentVariablesFromPackageJson() {
   echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
 }
 
+def setEnvironmentVariablesFromVersionTxt() {
+  echo "Set required Environment variables for the pipeline job from VERSION.txt"
+  def content = readFile file: 'VERSION.txt'
+  def (version) = content.tokenize('\n')
+  env.PACKAGE_ARTIFACT_PREVIOUS_VERSION = version
+  echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
+}
+
 def publishLintResults(reportPathPattern = '**/reports/lint/eslint.xml') {
   checkstyle failedTotalAll: '0', canComputeNew: false, defaultEncoding: '', healthy: '', pattern: reportPathPattern, unHealthy: ''
 }
@@ -411,6 +420,39 @@ def updatePackageJsonWithNewReleaseVersion() {
   sh "sudo docker run -v ${env.WORKSPACE}/:/opt/app/ ${env.IMAGE_NAME}:base npm --no-git-tag-version version ${releaseVersionType.toLowerCase()}" 
 
   def packageJson = readJSON file: 'package.json'
+  env.PACKAGE_ARTIFACT_RELEASE_VERSION = packageJson.version
+
+  echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
+  echo "PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: ${env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE}"
+  echo "PACKAGE_ARTIFACT_RELEASE_VERSION: ${env.PACKAGE_ARTIFACT_RELEASE_VERSION}"
+}
+
+def bumpVersionNumberBySemverType(String currentVersion, String releaseVersionType) {
+  echo currentVersion
+  def (major, minor, patch) = currentVersion.tokenize('.')
+
+  if (releaseVersionType == 'MAJOR') {
+    major = major.toInteger() + 1
+    minor = 0
+    patch = 0
+  } else if (releaseVersionType == 'MINOR') {
+    minor = minor.toInteger() + 1
+    patch = 0
+  } else if (releaseVersionType == 'PATCH') {
+    patch = patch.toInteger() + 1
+  }
+
+  String releaseVersion = "${major}.${minor}.${patch}"
+  echo "Release Version: ${releaseVersion}"
+  releaseVersion
+}
+
+def updateVersionTxtWithNewReleaseVersion() {
+  // Possible values for PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: PATCH, MINOR, MAJOR 
+  def releaseVersion = bumpVersionNumberBySemverType(env.PACKAGE_ARTIFACT_PREVIOUS_VERSION, env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE)
+  
+  writeFile file: "VERSION.txt", text: "${releaseVersion}\n"
+  
   env.PACKAGE_ARTIFACT_RELEASE_VERSION = packageJson.version
 
   echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
