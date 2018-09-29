@@ -320,8 +320,11 @@ def chooseArtifactType() {
   def inputData = input message: 'Select the type of the artifact?',
     parameters: [
       choice(
-        choices: 'SNAPSHOT\nRELEASE', 
-        description: 'If you select the option SNAPSHOT (Snapshot Artifact 📦🔗), then BRANCH_NAME__GIT_REVISION will be used as version number and no GIT tag will be added.\n If you select RELEASE (Release Artifact📦🔖) option, then package.json will be updated with next version based on Semver and also GIT tag will be added.', 
+        choices: [
+          'SNAPSHOT',
+          'RELEASE'
+        ], 
+        description: 'If you select the option SNAPSHOT (Snapshot Artifact 📦🔗), then SNAPSHOT_BRANCH_NAME__GIT_REVISION will be used as version number and no GIT tag will be added.\n If you select RELEASE (Release Artifact📦🔖) option, then package.json will be updated with next version based on Semver and also GIT tag will be added.', 
         name: 'PACKAGE_ARTIFACT_TYPE'
       )
     ],
@@ -344,7 +347,10 @@ def approveNonMasterBranchReleaseArtifact() {
   def inputData = input message: 'Are you sure you want to make Release artifact from a non-master branch?',
     parameters: [
       choice(
-        choices: 'NO, but create SNAPSHOT artifact instead\nYES', 
+        choices: [
+          'NO, but create SNAPSHOT artifact instead',
+          'YES'
+        ], 
         description: 'Please continue only if you are trying to make Hotfix or Epic Feature branch Release Artifact.\n It is recommended to make Release Artifact 📦🔖 from master branch unless you have a valid reason like hotfix release or major release with possible rollback.', 
         name: 'PACKAGE_ARTIFACT_IS_NON_MASTER_RELEASE'
       )
@@ -372,7 +378,11 @@ def chooseAndApproveReleaseArtifactType() {
   def inputData = input message: 'Select the type of version of the Release Artifact 📦🔖?',
     parameters: [
       choice(
-        choices: 'MINOR\nPATCH\nMAJOR', 
+        choices: [
+          'MINOR',
+          'PATCH',
+          'MAJOR'
+        ],
         description: 'package.json will be updated with next version based on Semver and also GIT tag will be added.', 
         name: 'NEW_RELEASE_VERSION_TYPE'
       )
@@ -468,7 +478,7 @@ def isLastCommitByJenkins() {
 
 def createPackageArtifactVersion() {
   if ("${PACKAGE_ARTIFACT_TYPE}" == "SNAPSHOT") {
-    def revision = env.PACKAGE_ARTIFACT_GIT_REVISION.take(6)
+    def revision = env.PACKAGE_ARTIFACT_GIT_REVISION.take(7)
     def snapshotVersion = "SNAPSHOT_${PACKAGE_ARTIFACT_GIT_BRANCH}__${revision}"
     env.PACKAGE_ARTIFACT_VERSION = snapshotVersion
   } else {
