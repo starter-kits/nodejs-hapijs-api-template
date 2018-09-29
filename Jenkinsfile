@@ -453,7 +453,7 @@ def updateVersionTxtWithNewReleaseVersion() {
   
   writeFile file: "VERSION.txt", text: "${releaseVersion}\n"
   
-  env.PACKAGE_ARTIFACT_RELEASE_VERSION = packageJson.version
+  env.PACKAGE_ARTIFACT_RELEASE_VERSION = releaseVersion
 
   echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
   echo "PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: ${env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE}"
