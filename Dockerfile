@@ -19,10 +19,12 @@ COPY . .
 
 # ----------------------------------------------------------------------------------
 # ---- Dependencies with source ----------------------------------------------------------------
-FROM prod_build AS dev_build
+FROM base AS dev_build
+ARG APP_PATH=/opt/app
 
-# install global app dependencies for development
-RUN npm install -g nodemon
+COPY --from=prod_build ${APP_PATH}/node_modules ./
+COPY --from=prod_build ${APP_PATH}/package*.json ./
+
 # install app dependencies including 'devDependencies'
 RUN npm install
 
@@ -30,9 +32,11 @@ RUN npm install
 # for now, keep package-lock.json in `.tmp`. Then copy from  ./.tmp/package-lock.json to ./package-lock.json at docker run time.
 RUN mkdir -p ./.tmp && cp ./package-lock.json ./.tmp/package-lock.json
 
+COPY . .
+
 # ----------------------------------------------------------------------------------
 # --- Release for Production -------------------------------------------------------
-FROM node:8.11.3-alpine
+FROM base AS prod
 ARG APP_PATH=/opt/app
 ENV NODE_ENV=production
 
@@ -43,3 +47,21 @@ COPY --from=prod_build ${APP_PATH} ./
 EXPOSE 3000
 USER node
 CMD ["node", "."]
+
+# ----------------------------------------------------------------------------------
+# --- Release for Local Development -------------------------------------------------------
+FROM base AS local_dev
+ARG APP_PATH=/opt/app
+ENV NODE_ENV=development
+
+WORKDIR ${APP_PATH}
+
+# install global app dependencies for development
+RUN npm install -g nodemon
+
+COPY --from=dev_build ${APP_PATH} ./
+
+EXPOSE 3000
+USER node
+# To make sure `package-lock.json` is available in host before start node app in local dev
+CMD ["/bin/sh", "-c", "cp ./.tmp/package-lock.json ./package-lock.json && nodemon ."]
