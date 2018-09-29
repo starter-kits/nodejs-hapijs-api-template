@@ -161,6 +161,12 @@ pipeline {
           }
         }
         stage('Publish Image') {
+          when {
+            anyOf {
+              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'SNAPSHOT'
+              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
+            }
+          }
           steps {
             script {
               env.PACKAGE_ARTIFACT_RELEASE_VERSION = getPackageReleaseVersion()
