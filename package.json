@@ -1,6 +1,6 @@
 {
   "name": "nodejs-hapijs-api-template",
-  "version": "0.4.11",
+  "version": "0.5.0",
   "description": "Nodejs Hapi.js API Skeleton",
   "main": "src/index.js",
   "scripts": {
