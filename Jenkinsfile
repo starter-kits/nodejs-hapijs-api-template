@@ -85,87 +85,87 @@ pipeline {
         }
       }
     }
-    // stage('Checkout Source') {
-    //   agent any
-    //   stages {
-        // stage('Update Release Version') {
-        //   when {
-        //     environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-        //   }
-        //   steps {
-        //     script {
-        //       updatePackageJsonWithReleaseVersion()
-        //       updateVersionTxtWithReleaseVersion()
-        //     }
-        //   }
-        // }
-        // stage('Install Dependencies') {
-        //   steps {
-        //     sh 'sudo docker build -t ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} --target dev_build .'
-        //     echo "Installed dependencies"
-        //   }
-        // }
-        // stage('Lint') {
-        //   steps {
-        //     script {
-        //       try {
-        //         sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm run lint'  
-        //       } catch(e) {
-        //         publishLintResults()
-        //         throw e
-        //       } finally {
-        //         publishLintResults()
-        //       }
-        //     }
-        //   }
-        // }
-        // stage('Test') {
-        //   steps {
-        //     script {
-        //       try {
-        //         sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm test'  
-        //       } catch(e) {
-        //         echo "Test failed"
-        //         publishTestResults()
-        //         publishUnitTestCoverageCoberturaReports()
-        //         throw e
-        //       } finally {
-        //         publishTestResults()
-        //         publishUnitTestCoverageCoberturaReports()
-        //       }
-        //       // sh 'docker rmi ${IMAGE_NAME}:dev_build'
-        //     }
-        //   }
-        // }
-        // stage('Tag with Release Version') {
-        //   when {
-        //     environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-        //   }
-        //   steps {
-        //     script {
-        //       gitCommitAndTagWithReleaseVersion()
-        //     }
-        //   }
-        // }
-        // stage('Publish Image') {
-        //   when {
-        //     anyOf {
-        //       environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'SNAPSHOT'
-        //       environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-        //     }
-        //   }
-        //   steps {
-        //     script {
-        //       createPackageArtifactVersion()
-        //       sh '''
-        //       sudo docker build -t ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION} --target production .
-        //       # sudo docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION}
-        //       '''
-        //     }
-        //   }
-        // }
-    //   }
-    // }
+    stage('Checkout Source') {
+      agent any
+      stages {
+        stage('Update Release Version') {
+          when {
+            environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
+          }
+          steps {
+            script {
+              updatePackageJsonWithReleaseVersion()
+              updateVersionTxtWithReleaseVersion()
+            }
+          }
+        }
+        stage('Install Dependencies') {
+          steps {
+            sh 'sudo docker build -t ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} --target dev_build .'
+            echo "Installed dependencies"
+          }
+        }
+        stage('Lint') {
+          steps {
+            script {
+              try {
+                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm run lint'  
+              } catch(e) {
+                publishLintResults()
+                throw e
+              } finally {
+                publishLintResults()
+              }
+            }
+          }
+        }
+        stage('Test') {
+          steps {
+            script {
+              try {
+                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm test'  
+              } catch(e) {
+                echo "Test failed"
+                publishTestResults()
+                publishUnitTestCoverageCoberturaReports()
+                throw e
+              } finally {
+                publishTestResults()
+                publishUnitTestCoverageCoberturaReports()
+              }
+              // sh 'docker rmi ${IMAGE_NAME}:dev_build'
+            }
+          }
+        }
+        stage('Tag with Release Version') {
+          when {
+            environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
+          }
+          steps {
+            script {
+              gitCommitAndTagWithReleaseVersion()
+            }
+          }
+        }
+        stage('Publish Image') {
+          when {
+            anyOf {
+              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'SNAPSHOT'
+              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
+            }
+          }
+          steps {
+            script {
+              createPackageArtifactVersion()
+              sh '''
+              sudo docker build -t ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION} --target production .
+              # sudo docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION}
+              '''
+            }
+          }
+        }
+      }
+    }
     stage('Deploy to Dev') {
       agent any
       options {
