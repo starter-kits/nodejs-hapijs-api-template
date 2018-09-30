@@ -183,7 +183,7 @@ pipeline {
         }
       }
     }
-    stage('Stage Deployment')
+    stage('Stage Deployment') {
       stages {
         stage('Approval') {
           agent none
@@ -232,24 +232,6 @@ pipeline {
           }
           step {
             echo "TODO"
-          }
-        }
-      }
-    }
-    stage('Prod Deployment') {
-      stages {
-        stage('Deploy to Prod') {
-          agent any
-          input {
-            message 'Should we deploy to Prod?'
-          }
-          when {
-            environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-          }
-          steps {
-            script {
-              echo "TODO"
-            }
           }
         }
       }
