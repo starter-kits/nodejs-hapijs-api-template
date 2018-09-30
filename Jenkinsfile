@@ -192,8 +192,8 @@ pipeline {
         stage('Approval') {
           steps {
             script {
-              def inputData = input message: 'Stage Deployment Approval Step',
-                ok: 'Click here',
+              def inputData = input message: 'Please fill the form and confirm to proceed further. Using ABORT button is not recommended.',
+                ok: 'Confirm',
                 submitter: 'jenkins_admin',
                 submitterParameter: 'STAGE_DEPLOY_APPROVER',
                 parameters: [
