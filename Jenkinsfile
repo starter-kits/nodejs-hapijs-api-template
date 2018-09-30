@@ -192,7 +192,7 @@ pipeline {
         skipDefaultCheckout()
       }
       stages {
-        stage('Approval') {
+        stage('Approve Stage Deployment') {
           steps {
             script {
               approveStageDeployment()
@@ -219,7 +219,7 @@ pipeline {
         skipDefaultCheckout()
       }
       stages {
-        stage('Approval') {
+        stage('Approve Prod Deployment') {
           steps {
             script {
               approveProdDeployment()
