@@ -191,33 +191,35 @@ pipeline {
       stages {
         stage('Approval') {
           steps {
-            input message: 'Stage Deployment Approval Step',
-              ok: 'Click here',
-              submitter: 'jenkins_admin',
-              submitterParameter: 'STAGE_DEPLOY_APPROVER',
-              parameters: [
-                choice(
-                  name: 'DEV_DEPLOY_STATUS',
-                  choices: ['Success', 'Failed. However, Stage deployment can be proceeded.', 'Failed. Stage deployment cannot be proceeded.'],
-                  description: 'Status of Dev deployment. Please update the Remarks field if Dev deployment failed.'
-                ),
-                choice(
-                  name: 'SHALL_PROCEED_STAGE_DEPLOY',
-                  choices: ['YES', 'NO'],
-                  description: 'Should we deploy to Stage?'
-                ),
-                text(
-                  name: 'STAGE_DEPLOY_REMARKS',
-                  defaultValue: 'Dev deployment was as expected.\nNo unusual behaviour is noticed.',
-                  description: 'Remarks'
-                )
-              ]
+            script {
+              input message: 'Stage Deployment Approval Step',
+                ok: 'Click here',
+                submitter: 'jenkins_admin',
+                submitterParameter: 'STAGE_DEPLOY_APPROVER',
+                parameters: [
+                  choice(
+                    name: 'DEV_DEPLOY_STATUS',
+                    choices: ['Success', 'Failed. However, Stage deployment can be proceeded.', 'Failed. Stage deployment cannot be proceeded.'],
+                    description: 'Status of Dev deployment. Please update the Remarks field if Dev deployment failed.'
+                  ),
+                  choice(
+                    name: 'SHALL_PROCEED_STAGE_DEPLOY',
+                    choices: ['YES', 'NO'],
+                    description: 'Should we deploy to Stage?'
+                  ),
+                  text(
+                    name: 'STAGE_DEPLOY_REMARKS',
+                    defaultValue: 'Dev deployment was as expected.\nNo unusual behaviour is noticed.',
+                    description: 'Remarks'
+                  )
+                ]
 
-            echo 'SHALL_PROCEED_STAGE_DEPLOY: ${env.SHALL_PROCEED_STAGE_DEPLOY}'
-            echo 'STAGE_DEPLOY_INPUT: ${env.STAGE_DEPLOY_INPUT}'
-            echo 'STAGE_DEPLOY_APPROVER: ${env.STAGE_DEPLOY_APPROVER}'
-            echo 'DEV_DEPLOY_STATUS: ${env.DEV_DEPLOY_STATUS}'
-            echo 'STAGE_DEPLOY_REMARKS: ${env.STAGE_DEPLOY_REMARKS}'
+              echo "SHALL_PROCEED_STAGE_DEPLOY: ${env.SHALL_PROCEED_STAGE_DEPLOY}"
+              echo "STAGE_DEPLOY_INPUT: ${env.STAGE_DEPLOY_INPUT}"
+              echo "STAGE_DEPLOY_APPROVER: ${env.STAGE_DEPLOY_APPROVER}"
+              echo "DEV_DEPLOY_STATUS: ${env.DEV_DEPLOY_STATUS}"
+              echo "STAGE_DEPLOY_REMARKS: ${env.STAGE_DEPLOY_REMARKS}"
+            }
           }
         }
         stage('Deploy to Stage') {
