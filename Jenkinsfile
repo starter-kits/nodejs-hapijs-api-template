@@ -194,22 +194,6 @@ pipeline {
             environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
           }
           steps {
-            def inputData = input message: 'Select the type of the artifact?',
-    parameters: [
-      choice(
-        choices: [
-          'SNAPSHOT',
-          'RELEASE'
-        ], 
-        description: 'If you select the option SNAPSHOT (Snapshot Artifact 📦🔗), then SNAPSHOT_BRANCH_NAME__GIT_REVISION will be used as version number and no GIT tag will be added.\n If you select RELEASE (Release Artifact📦🔖) option, then package.json will be updated with next version based on Semver and also GIT tag will be added.', 
-        name: 'PACKAGE_ARTIFACT_TYPE'
-      )
-    ],
-    submitterParameter: 'PACKAGE_ARTIFACT_TYPE_APPROVER',
-    // Jenkins User IDs and/or external group names of person or people permitted to respond to the input, separated by ','. If you configure "alice, bob", will match with "alice" but not with "bob". You need to remove all the white spaces.
-    // For now, jenkins_admin
-    submitter: 'jenkins_admin'
-
             input message: 'Stage Deployment Approval Step',
               ok: 'Click here',
               submitter: 'jenkins_admin',
