@@ -166,8 +166,8 @@ pipeline {
         // }
     //   }
     // }
-    stage('Deployment') {
-      agent none
+    stage('Deploy to Dev') {
+      agent any
       options {
         skipDefaultCheckout()
       }
@@ -177,18 +177,15 @@ pipeline {
           environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
         }
       }
-      stages {
-        stage('Deploy to Dev') {
-          agent any
-          steps {
-            script {
-              echo "TODO"
-            }
-          }
+      steps {
+        script {
+          echo "TODO"
         }
       }
+    }
+    stage('Stage Deployment')
       stages {
-        stage('Approve Stage Deployment') {
+        stage('Approval') {
           agent none
           when {
             environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
@@ -238,6 +235,8 @@ pipeline {
           }
         }
       }
+    }
+    stage('Prod Deployment') {
       stages {
         stage('Deploy to Prod') {
           agent any
