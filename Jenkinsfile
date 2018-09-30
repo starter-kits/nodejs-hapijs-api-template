@@ -106,35 +106,37 @@ pipeline {
             echo "Installed dependencies"
           }
         }
-        stage('Lint') {
-          steps {
-            script {
-              try {
-                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm run lint'  
-              } catch(e) {
-                publishLintResults()
-                throw e
-              } finally {
-                publishLintResults()
+        parallel {
+          stage('Lint') {
+            steps {
+              script {
+                try {
+                  sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm run lint'  
+                } catch(e) {
+                  publishLintResults()
+                  throw e
+                } finally {
+                  publishLintResults()
+                }
               }
             }
           }
-        }
-        stage('Test') {
-          steps {
-            script {
-              try {
-                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm test'  
-              } catch(e) {
-                echo "Test failed"
-                publishTestResults()
-                publishUnitTestCoverageCoberturaReports()
-                throw e
-              } finally {
-                publishTestResults()
-                publishUnitTestCoverageCoberturaReports()
+          stage('Test') {
+            steps {
+              script {
+                try {
+                  sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm test'  
+                } catch(e) {
+                  echo "Test failed"
+                  publishTestResults()
+                  publishUnitTestCoverageCoberturaReports()
+                  throw e
+                } finally {
+                  publishTestResults()
+                  publishUnitTestCoverageCoberturaReports()
+                }
+                // sh 'docker rmi ${IMAGE_NAME}:dev_build'
               }
-              // sh 'docker rmi ${IMAGE_NAME}:dev_build'
             }
           }
         }
