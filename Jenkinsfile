@@ -220,6 +220,15 @@ pipeline {
             echo "STAGE_DEPLOY_REMARKS: ${env.STAGE_DEPLOY_REMARKS}"
           }
         }
+        stage('Deploy to Stage') {
+          agent any
+          when {
+            environment name: 'SHALL_PROCEED_STAGE_DEPLOY', value: 'YES'
+          }
+          steps {
+            echo "TODO"
+          }
+        }
       }
     }
   }
