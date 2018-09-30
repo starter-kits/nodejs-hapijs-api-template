@@ -192,7 +192,7 @@ pipeline {
         stage('Approval') {
           steps {
             script {
-              input message: 'Stage Deployment Approval Step',
+              def inputData = input message: 'Stage Deployment Approval Step',
                 ok: 'Click here',
                 submitter: 'jenkins_admin',
                 submitterParameter: 'STAGE_DEPLOY_APPROVER',
@@ -214,11 +214,15 @@ pipeline {
                   )
                 ]
 
-              echo "SHALL_PROCEED_STAGE_DEPLOY: ${env.SHALL_PROCEED_STAGE_DEPLOY}"
-              echo "STAGE_DEPLOY_INPUT: ${env.STAGE_DEPLOY_INPUT}"
+              env.STAGE_DEPLOY_APPROVER = inputData.STAGE_DEPLOY_APPROVER
+              env.DEV_DEPLOY_STATUS = inputData.DEV_DEPLOY_STATUS
+              env.SHALL_PROCEED_STAGE_DEPLOY = inputData.SHALL_PROCEED_STAGE_DEPLOY
+              env.STAGE_DEPLOY_REMARKS = inputData.STAGE_DEPLOY_REMARKS
+
               echo "STAGE_DEPLOY_APPROVER: ${env.STAGE_DEPLOY_APPROVER}"
               echo "DEV_DEPLOY_STATUS: ${env.DEV_DEPLOY_STATUS}"
-              echo "STAGE_DEPLOY_REMARKS: ${env.STAGE_DEPLOY_REMARKS}"
+              echo "SHALL_PROCEED_STAGE_DEPLOY: ${env.SHALL_PROCEED_STAGE_DEPLOY}"
+              echo "STAGE_DEPLOY_REMARKS: ${env.STAGE_DEPLOY_REMARKS}""
             }
           }
         }
