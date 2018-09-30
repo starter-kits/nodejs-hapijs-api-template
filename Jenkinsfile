@@ -179,6 +179,7 @@ pipeline {
       }
       stages {
         stage('Deploy to Dev') {
+          agent any
           steps {
             script {
               echo "TODO"
@@ -186,6 +187,10 @@ pipeline {
           }
         }
         stage('Deploy to Stage') {
+          agent any
+          input {
+            message 'Should we deploy to Stage?'
+          }
           when {
             environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
           }
@@ -196,6 +201,10 @@ pipeline {
           }
         }
         stage('Deploy to Prod') {
+          agent any
+          input {
+            message 'Should we deploy to Prod?'
+          }
           when {
             environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
           }
