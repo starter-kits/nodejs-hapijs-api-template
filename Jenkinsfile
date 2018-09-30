@@ -102,7 +102,9 @@ pipeline {
         }
         stage('Install Dependencies') {
           steps {
-            sh 'sudo docker build -t ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} --target dev_build .'
+            script {
+              installDependencies()
+            }
             echo "Installed dependencies"
           }
         }
@@ -141,10 +143,7 @@ pipeline {
           steps {
             script {
               createPackageArtifactVersion()
-              sh '''
-              sudo docker build -t ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION} --target production .
-              # sudo docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION}
-              '''
+              publishArtifact()
             }
           }
         }
@@ -315,6 +314,10 @@ def setEnvironmentVariablesFromVersionTxt() {
   echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
 }
 
+def installDependencies() {
+  sh 'sudo docker build -t ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} --target dev_build .'
+}
+
 def publishLintResults(reportPathPattern = '**/reports/lint/eslint.xml') {
   checkstyle failedTotalAll: '0', canComputeNew: false, defaultEncoding: '', healthy: '', pattern: reportPathPattern, unHealthy: ''
 }
@@ -362,6 +365,13 @@ def publishUnitTestCoverageCoberturaReports(reportPathPattern = '**/reports/test
     onlyStable: false,
     sourceEncoding: 'ASCII',
     zoomCoverageChart: false
+}
+
+def publishArtifact() {
+  sh '''
+  sudo docker build -t ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION} --target production .
+  # sudo docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION}
+  '''
 }
 
 def chooseArtifactType() {
