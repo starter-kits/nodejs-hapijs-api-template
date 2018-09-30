@@ -207,8 +207,8 @@ pipeline {
               sh 'echo SHALL_PROCEED_STAGE_DEPLOY: ${SHALL_PROCEED_STAGE_DEPLOY}'
               sh 'echo STAGE_DEPLOY_INPUT: ${STAGE_DEPLOY_INPUT}'
               sh 'echo STAGE_DEPLOY_APPROVER: ${STAGE_DEPLOY_APPROVER}'
-              sh 'DEV_DEPLOY_STATUS: ${DEV_DEPLOY_STATUS}'
-              sh 'STAGE_DEPLOY_REMARKS: ${STAGE_DEPLOY_REMARKS}'
+              sh 'echo DEV_DEPLOY_STATUS: ${DEV_DEPLOY_STATUS}'
+              sh 'echo STAGE_DEPLOY_REMARKS: ${STAGE_DEPLOY_REMARKS}'
 
               echo "TODO"
             }
