@@ -192,37 +192,7 @@ pipeline {
         stage('Approval') {
           steps {
             script {
-              def inputData = input message: 'Please fill the form and click CONFIRM button to proceed further. Using ABORT button is not recommended.',
-                ok: 'Confirm',
-                submitter: 'jenkins_admin',
-                submitterParameter: 'STAGE_DEPLOY_APPROVER',
-                parameters: [
-                  choice(
-                    name: 'DEV_DEPLOY_STATUS',
-                    choices: ['Success', 'FAILED'],
-                    description: 'Status of Dev deployment. Please update the Remarks field if Dev deployment failed.'
-                  ),
-                  text(
-                    name: 'STAGE_DEPLOY_REMARKS',
-                    defaultValue: 'Dev deployment was as expected.\nNo unusual behaviour is noticed.',
-                    description: 'Remarks'
-                  ),
-                  choice(
-                    name: 'SHALL_PROCEED_STAGE_DEPLOY',
-                    choices: ['YES', 'NO'],
-                    description: 'Should we deploy to Stage?'
-                  )
-                ]
-
-              env.STAGE_DEPLOY_APPROVER = inputData.STAGE_DEPLOY_APPROVER
-              env.DEV_DEPLOY_STATUS = inputData.DEV_DEPLOY_STATUS
-              env.SHALL_PROCEED_STAGE_DEPLOY = inputData.SHALL_PROCEED_STAGE_DEPLOY
-              env.STAGE_DEPLOY_REMARKS = inputData.STAGE_DEPLOY_REMARKS
-
-              echo "STAGE_DEPLOY_APPROVER: ${env.STAGE_DEPLOY_APPROVER}"
-              echo "DEV_DEPLOY_STATUS: ${env.DEV_DEPLOY_STATUS}"
-              echo "SHALL_PROCEED_STAGE_DEPLOY: ${env.SHALL_PROCEED_STAGE_DEPLOY}"
-              echo "STAGE_DEPLOY_REMARKS: ${env.STAGE_DEPLOY_REMARKS}"
+              approveStageDeployment()
             }
           }
         }
@@ -230,6 +200,30 @@ pipeline {
           agent any
           when {
             environment name: 'SHALL_PROCEED_STAGE_DEPLOY', value: 'YES'
+          }
+          steps {
+            echo "TODO"
+          }
+        }
+      }
+    }
+    stage('Prod Deployment') {
+      agent none
+      when {
+        environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
+      }
+      stages {
+        stage('Approval') {
+          steps {
+            script {
+              approveProdDeployment()
+            }
+          }
+        }
+        stage('Deploy to Prod') {
+          agent any
+          when {
+            environment name: 'SHALL_PROCEED_PROD_DEPLOY', value: 'YES'
           }
           steps {
             echo "TODO"
@@ -518,4 +512,72 @@ def createPackageArtifactVersion() {
   echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
   echo "PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE: ${env.PACKAGE_ARTIFACT_RELEASE_VERSION_TYPE}"
   echo "PACKAGE_ARTIFACT_VERSION: ${env.PACKAGE_ARTIFACT_VERSION}"
+}
+
+def approveStageDeployment() {
+  def inputData = input message: 'Please fill the form and click CONFIRM button to proceed further. Using ABORT button is not recommended.',
+    ok: 'Confirm',
+    submitter: 'jenkins_admin',
+    submitterParameter: 'STAGE_DEPLOY_APPROVER',
+    parameters: [
+      choice(
+        name: 'DEV_DEPLOY_STATUS',
+        choices: ['Success', 'FAILED'],
+        description: 'Status of Dev deployment. Please update the Remarks field if Dev deployment failed.'
+      ),
+      text(
+        name: 'STAGE_DEPLOY_REMARKS',
+        defaultValue: 'Dev deployment was as expected.\nNo unusual behaviour is noticed.',
+        description: 'Remarks'
+      ),
+      choice(
+        name: 'SHALL_PROCEED_STAGE_DEPLOY',
+        choices: ['YES', 'NO'],
+        description: 'Should we deploy to Stage?'
+      )
+    ]
+
+  env.STAGE_DEPLOY_APPROVER = inputData.STAGE_DEPLOY_APPROVER
+  env.DEV_DEPLOY_STATUS = inputData.DEV_DEPLOY_STATUS
+  env.SHALL_PROCEED_STAGE_DEPLOY = inputData.SHALL_PROCEED_STAGE_DEPLOY
+  env.STAGE_DEPLOY_REMARKS = inputData.STAGE_DEPLOY_REMARKS
+
+  echo "STAGE_DEPLOY_APPROVER: ${env.STAGE_DEPLOY_APPROVER}"
+  echo "DEV_DEPLOY_STATUS: ${env.DEV_DEPLOY_STATUS}"
+  echo "SHALL_PROCEED_STAGE_DEPLOY: ${env.SHALL_PROCEED_STAGE_DEPLOY}"
+  echo "STAGE_DEPLOY_REMARKS: ${env.STAGE_DEPLOY_REMARKS}"
+}
+
+def approveProdDeployment() {
+  def inputData = input message: 'Please fill the form and click CONFIRM button to proceed further. Using ABORT button is not recommended.',
+    ok: 'Confirm',
+    submitter: 'jenkins_admin',
+    submitterParameter: 'PROD_DEPLOY_APPROVER',
+    parameters: [
+      choice(
+        name: 'STAGE_DEPLOY_STATUS',
+        choices: ['Success', 'FAILED'],
+        description: 'Status of Stage deployment. Please update the Remarks field if Stage deployment failed.'
+      ),
+      text(
+        name: 'PROD_DEPLOY_REMARKS',
+        defaultValue: 'Stage deployment was as expected.\nNo unusual behaviour is noticed.',
+        description: 'Remarks'
+      ),
+      choice(
+        name: 'SHALL_PROCEED_PROD_DEPLOY',
+        choices: ['YES', 'NO'],
+        description: 'Should we deploy to Production?'
+      )
+    ]
+
+  env.PROD_DEPLOY_APPROVER = inputData.PROD_DEPLOY_APPROVER
+  env.PROD_DEPLOY_STATUS = inputData.PROD_DEPLOY_STATUS
+  env.SHALL_PROCEED_PROD_DEPLOY = inputData.SHALL_PROCEED_PROD_DEPLOY
+  env.PROD_DEPLOY_REMARKS = inputData.PROD_DEPLOY_REMARKS
+
+  echo "PROD_DEPLOY_APPROVER: ${env.PROD_DEPLOY_APPROVER}"
+  echo "PROD_DEPLOY_STATUS: ${env.PROD_DEPLOY_STATUS}"
+  echo "SHALL_PROCEED_PROD_DEPLOY: ${env.SHALL_PROCEED_PROD_DEPLOY}"
+  echo "PROD_DEPLOY_REMARKS: ${env.PROD_DEPLOY_REMARKS}"
 }
