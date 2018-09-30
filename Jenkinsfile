@@ -94,8 +94,8 @@ pipeline {
           }
           steps {
             script {
-              updatePackageJsonWithReleaseVersion()
-              updateVersionTxtWithReleaseVersion()
+              // updatePackageJsonWithReleaseVersion()
+              // updateVersionTxtWithReleaseVersion()
             }
           }
         }
@@ -143,7 +143,7 @@ pipeline {
           }
           steps {
             script {
-              gitCommitAndTagWithReleaseVersion()
+              // gitCommitAndTagWithReleaseVersion()
             }
           }
         }
