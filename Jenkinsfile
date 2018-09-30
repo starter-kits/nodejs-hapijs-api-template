@@ -290,6 +290,10 @@ def setEnvVarsFromJSONConfigFile(jenkinsfileConfigFileId) {
 }
 
 def setEnvironmentVariablesFromDefaultJenkinsEnvVariables() {
+  // Environment variables are accessible from Groovy code as env.VARNAME or simply as VARNAME. 
+  // You can write to such properties as well (only using the env. prefix): env.MYTOOL_VERSION = '1.33'
+  // However any variables set this way are global to the Pipeline build.
+  // For variables with node-specific content (such as file paths), you should instead use the withEnv step, to bind the variable only within a node block.
   echo "Set required Environment variables for the pipeline job from Jenkins Default Environment variables"
   env.PACKAGE_ARTIFACT_BUILD_NUMBER = env.BUILD_NUMBER
   env.PACKAGE_ARTIFACT_BUILD_JOB_NAME = env.JOB_NAME
