@@ -302,6 +302,13 @@ def setEnvironmentVariablesFromDefaultJenkinsEnvVariables() {
   echo "PACKAGE_ARTIFACT_GIT_REVISION: ${env.PACKAGE_ARTIFACT_GIT_REVISION}"
   echo "PACKAGE_ARTIFACT_GIT_BRANCH: ${env.PACKAGE_ARTIFACT_GIT_BRANCH}"
   echo "PACKAGE_ARTIFACT_GIT_URL: ${env.PACKAGE_ARTIFACT_GIT_URL}"
+  echo "CHANGE_ID: ${env.CHANGE_ID}"
+  echo "CHANGE_URL: ${env.CHANGE_URL}"
+  echo "CHANGE_TITLE: ${env.CHANGE_TITLE}"
+  echo "CHANGE_AUTHOR: ${env.CHANGE_AUTHOR}"
+  echo "CHANGE_AUTHOR_DISPLAY_NAME: ${env.CHANGE_AUTHOR_DISPLAY_NAME}"
+  echo "CHANGE_AUTHOR_EMAIL: ${env.CHANGE_AUTHOR_EMAIL}"
+  echo "CHANGE_TARGET: ${env.CHANGE_TARGET}"
 }
 
 def setEnvironmentVariablesFromBuildUserPlugin() {
