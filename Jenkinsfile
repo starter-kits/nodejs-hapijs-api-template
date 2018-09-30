@@ -213,11 +213,11 @@ pipeline {
                 )
               ]
 
-            sh 'echo SHALL_PROCEED_STAGE_DEPLOY: ${SHALL_PROCEED_STAGE_DEPLOY}'
-            sh 'echo STAGE_DEPLOY_INPUT: ${STAGE_DEPLOY_INPUT}'
-            sh 'echo STAGE_DEPLOY_APPROVER: ${STAGE_DEPLOY_APPROVER}'
-            sh 'echo DEV_DEPLOY_STATUS: ${DEV_DEPLOY_STATUS}'
-            sh 'echo STAGE_DEPLOY_REMARKS: ${STAGE_DEPLOY_REMARKS}'
+            echo "SHALL_PROCEED_STAGE_DEPLOY: ${SHALL_PROCEED_STAGE_DEPLOY}"
+            echo "STAGE_DEPLOY_INPUT: ${STAGE_DEPLOY_INPUT}"
+            echo "STAGE_DEPLOY_APPROVER: ${STAGE_DEPLOY_APPROVER}"
+            echo "DEV_DEPLOY_STATUS: ${DEV_DEPLOY_STATUS}"
+            echo "STAGE_DEPLOY_REMARKS: ${STAGE_DEPLOY_REMARKS}"
           }
         }
       }
