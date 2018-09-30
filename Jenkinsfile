@@ -222,7 +222,7 @@ pipeline {
               echo "STAGE_DEPLOY_APPROVER: ${env.STAGE_DEPLOY_APPROVER}"
               echo "DEV_DEPLOY_STATUS: ${env.DEV_DEPLOY_STATUS}"
               echo "SHALL_PROCEED_STAGE_DEPLOY: ${env.SHALL_PROCEED_STAGE_DEPLOY}"
-              echo "STAGE_DEPLOY_REMARKS: ${env.STAGE_DEPLOY_REMARKS}""
+              echo "STAGE_DEPLOY_REMARKS: ${env.STAGE_DEPLOY_REMARKS}"
             }
           }
         }
