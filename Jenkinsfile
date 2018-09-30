@@ -179,7 +179,7 @@ pipeline {
       }
       steps {
         script {
-          echo "TODO"
+          deployToDev()
         }
       }
     }
@@ -187,9 +187,6 @@ pipeline {
       agent none
       when {
         environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-      }
-      options {
-        skipDefaultCheckout()
       }
       stages {
         stage('Approve Stage Deployment') {
@@ -204,8 +201,13 @@ pipeline {
           when {
             environment name: 'SHALL_PROCEED_STAGE_DEPLOY', value: 'YES'
           }
+          options {
+            skipDefaultCheckout()
+          }
           steps {
-            echo "TODO"
+            script {
+              deployToStage()
+            }
           }
         }
       }
@@ -214,9 +216,6 @@ pipeline {
       agent none
       when {
         environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-      }
-      options {
-        skipDefaultCheckout()
       }
       stages {
         stage('Approve Prod Deployment') {
@@ -231,8 +230,13 @@ pipeline {
           when {
             environment name: 'SHALL_PROCEED_PROD_DEPLOY', value: 'YES'
           }
+          options {
+            skipDefaultCheckout()
+          }
           steps {
-            echo "TODO"
+            script {
+              deployToProd()
+            }
           }
         }
       }
@@ -586,4 +590,16 @@ def approveProdDeployment() {
   echo "PROD_DEPLOY_STATUS: ${env.PROD_DEPLOY_STATUS}"
   echo "SHALL_PROCEED_PROD_DEPLOY: ${env.SHALL_PROCEED_PROD_DEPLOY}"
   echo "PROD_DEPLOY_REMARKS: ${env.PROD_DEPLOY_REMARKS}"
+}
+
+def deployToDev() {
+  echo "TODO"
+}
+
+def deployToStage() {
+  echo "TODO"
+}
+
+def deployToProd() {
+  echo "TODO"
 }
