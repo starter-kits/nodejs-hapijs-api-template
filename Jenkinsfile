@@ -191,9 +191,11 @@ pipeline {
           input {
             id 'PACKAGE_ARTIFACT_STAGE_DEPLOY_STAGE'
             message 'Should we deploy to Stage?'
+            ok 'Fill form and Click here to record your observation.'
             submitter 'jenkins_admin'
             submitterParameter 'PACKAGE_ARTIFACT_STAGE_DEPLOY_APPROVER'
             parameters {
+              choice(name: 'SHALL_PROCEED_PACKAGE_ARTIFACT_STAGE_DEPLOY', choices: ['YES', 'NO'], description: 'Should we deploy to Stage?')
               choice(name: 'PACKAGE_ARTIFACT_DEV_DEPLOY_STATUS', choices: ['Success', 'Failed. However, Stage deployment can be proceeded.', 'Failed. Stage deployment cannot be proceeded.'], description: 'Status of Dev deployment. Please update the Remarks field if Dev deployment failed. ')
               text(name: 'PACKAGE_ARTIFACT_STAGE_DEPLOY_REMARKS', defaultValue: 'Dev deployment was as expected.\nNo unusual behaviour is noticed.', description: 'Remarks')
             }
