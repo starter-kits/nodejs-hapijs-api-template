@@ -189,14 +189,13 @@ pipeline {
         stage('Deploy to Stage') {
           agent any
           input {
-            id 'STAGE_DEPLOY_INPUT'
-            message 'Should we deploy to Stage?'
-            ok 'Fill form and Click here to record your observation.'
+            message 'Stage Deployment Approval Step'
+            ok 'Click here'
             submitter 'jenkins_admin'
             submitterParameter 'STAGE_DEPLOY_APPROVER'
             parameters {
+              choice(name: 'DEV_DEPLOY_STATUS', choices: ['Success', 'Failed. However, Stage deployment can be proceeded.', 'Failed. Stage deployment cannot be proceeded.'], description: 'Status of Dev deployment. Please update the Remarks field if Dev deployment failed.')
               choice(name: 'SHALL_PROCEED_STAGE_DEPLOY', choices: ['YES', 'NO'], description: 'Should we deploy to Stage?')
-              choice(name: 'DEV_DEPLOY_STATUS', choices: ['Success', 'Failed. However, Stage deployment can be proceeded.', 'Failed. Stage deployment cannot be proceeded.'], description: 'Status of Dev deployment. Please update the Remarks field if Dev deployment failed. ')
               text(name: 'STAGE_DEPLOY_REMARKS', defaultValue: 'Dev deployment was as expected.\nNo unusual behaviour is noticed.', description: 'Remarks')
             }
           }
@@ -210,6 +209,7 @@ pipeline {
               sh 'echo STAGE_DEPLOY_APPROVER: ${STAGE_DEPLOY_APPROVER}'
               sh 'DEV_DEPLOY_STATUS: ${DEV_DEPLOY_STATUS}'
               sh 'STAGE_DEPLOY_REMARKS: ${STAGE_DEPLOY_REMARKS}'
+
               echo "TODO"
             }
           }
