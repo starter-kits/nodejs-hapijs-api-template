@@ -96,7 +96,7 @@ pipeline {
             script {
               // updatePackageJsonWithReleaseVersion()
               // updateVersionTxtWithReleaseVersion()
-              echo "test"
+              echo "Version is updated successfully in the required files"
             }
           }
         }
@@ -109,32 +109,14 @@ pipeline {
         stage('Lint') {
           steps {
             script {
-              try {
-                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm run lint'  
-              } catch(e) {
-                publishLintResults()
-                throw e
-              } finally {
-                publishLintResults()
-              }
+              lint()
             }
           }
         }
         stage('Test') {
           steps {
             script {
-              try {
-                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm test'  
-              } catch(e) {
-                echo "Test failed"
-                publishTestResults()
-                publishUnitTestCoverageCoberturaReports()
-                throw e
-              } finally {
-                publishTestResults()
-                publishUnitTestCoverageCoberturaReports()
-              }
-              // sh 'docker rmi ${IMAGE_NAME}:dev_build'
+              test()
             }
           }
         }
@@ -145,7 +127,7 @@ pipeline {
           steps {
             script {
               // gitCommitAndTagWithReleaseVersion()
-              echo "test"
+              echo "GIT Tag is added successfully"
             }
           }
         }
@@ -337,8 +319,34 @@ def publishLintResults(reportPathPattern = '**/reports/lint/eslint.xml') {
   checkstyle failedTotalAll: '0', canComputeNew: false, defaultEncoding: '', healthy: '', pattern: reportPathPattern, unHealthy: ''
 }
 
+def lint() {
+  try {
+    sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm run lint'  
+  } catch(e) {
+    publishLintResults()
+    throw e
+  } finally {
+    publishLintResults()
+  }
+}
+
 def publishTestResults(reportPathPattern = '**/reports/test/junit.xml') {
   junit reportPathPattern
+}
+
+def test() {
+  try {
+    sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm test'  
+  } catch(e) {
+    echo "Test failed"
+    publishTestResults()
+    publishUnitTestCoverageCoberturaReports()
+    throw e
+  } finally {
+    publishTestResults()
+    publishUnitTestCoverageCoberturaReports()
+  }
+  // sh 'docker rmi ${IMAGE_NAME}:dev_build'
 }
 
 def publishUnitTestCoverageCoberturaReports(reportPathPattern = '**/reports/test/coverage/cobertura-coverage.xml') {
