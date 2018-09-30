@@ -213,11 +213,11 @@ pipeline {
                 )
               ]
 
-            echo "SHALL_PROCEED_STAGE_DEPLOY: ${env.SHALL_PROCEED_STAGE_DEPLOY}"
-            echo "STAGE_DEPLOY_INPUT: ${env.STAGE_DEPLOY_INPUT}"
-            echo "STAGE_DEPLOY_APPROVER: ${env.STAGE_DEPLOY_APPROVER}"
-            echo "DEV_DEPLOY_STATUS: ${env.DEV_DEPLOY_STATUS}"
-            echo "STAGE_DEPLOY_REMARKS: ${env.STAGE_DEPLOY_REMARKS}"
+            echo 'SHALL_PROCEED_STAGE_DEPLOY: ${env.SHALL_PROCEED_STAGE_DEPLOY}'
+            echo 'STAGE_DEPLOY_INPUT: ${env.STAGE_DEPLOY_INPUT}'
+            echo 'STAGE_DEPLOY_APPROVER: ${env.STAGE_DEPLOY_APPROVER}'
+            echo 'DEV_DEPLOY_STATUS: ${env.DEV_DEPLOY_STATUS}'
+            echo 'STAGE_DEPLOY_REMARKS: ${env.STAGE_DEPLOY_REMARKS}'
           }
         }
         stage('Deploy to Stage') {
