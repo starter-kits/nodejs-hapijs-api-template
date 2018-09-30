@@ -199,18 +199,18 @@ pipeline {
                 parameters: [
                   choice(
                     name: 'DEV_DEPLOY_STATUS',
-                    choices: ['Success', 'Failed. However, Stage deployment can be proceeded.', 'Failed. Stage deployment cannot be proceeded.'],
+                    choices: ['Success', 'FAILED'],
                     description: 'Status of Dev deployment. Please update the Remarks field if Dev deployment failed.'
-                  ),
-                  choice(
-                    name: 'SHALL_PROCEED_STAGE_DEPLOY',
-                    choices: ['YES', 'NO'],
-                    description: 'Should we deploy to Stage?'
                   ),
                   text(
                     name: 'STAGE_DEPLOY_REMARKS',
                     defaultValue: 'Dev deployment was as expected.\nNo unusual behaviour is noticed.',
                     description: 'Remarks'
+                  ),
+                  choice(
+                    name: 'SHALL_PROCEED_STAGE_DEPLOY',
+                    choices: ['YES', 'NO'],
+                    description: 'Should we deploy to Stage?'
                   )
                 ]
 
