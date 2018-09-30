@@ -182,7 +182,7 @@ pipeline {
         stage('Deploy to Stage') {
           agent any
           when {
-            environment name: 'SHALL_PROCEED_STAGE_DEPLOY', value: 'YES'
+            environment name: 'SHOULD_PROCEED_STAGE_DEPLOY', value: 'YES'
           }
           options {
             skipDefaultCheckout()
@@ -211,7 +211,7 @@ pipeline {
         stage('Deploy to Prod') {
           agent any
           when {
-            environment name: 'SHALL_PROCEED_PROD_DEPLOY', value: 'YES'
+            environment name: 'SHOULD_PROCEED_PROD_DEPLOY', value: 'YES'
           }
           options {
             skipDefaultCheckout()
@@ -565,7 +565,7 @@ def approveStageDeployment() {
         description: 'Remarks'
       ),
       choice(
-        name: 'SHALL_PROCEED_STAGE_DEPLOY',
+        name: 'SHOULD_PROCEED_STAGE_DEPLOY',
         choices: ['YES', 'NO'],
         description: 'Should we deploy to Stage?'
       )
@@ -573,12 +573,12 @@ def approveStageDeployment() {
 
   env.STAGE_DEPLOY_APPROVER = inputData.STAGE_DEPLOY_APPROVER
   env.DEV_DEPLOY_STATUS = inputData.DEV_DEPLOY_STATUS
-  env.SHALL_PROCEED_STAGE_DEPLOY = inputData.SHALL_PROCEED_STAGE_DEPLOY
+  env.SHOULD_PROCEED_STAGE_DEPLOY = inputData.SHOULD_PROCEED_STAGE_DEPLOY
   env.STAGE_DEPLOY_REMARKS = inputData.STAGE_DEPLOY_REMARKS
 
   echo "STAGE_DEPLOY_APPROVER: ${env.STAGE_DEPLOY_APPROVER}"
   echo "DEV_DEPLOY_STATUS: ${env.DEV_DEPLOY_STATUS}"
-  echo "SHALL_PROCEED_STAGE_DEPLOY: ${env.SHALL_PROCEED_STAGE_DEPLOY}"
+  echo "SHOULD_PROCEED_STAGE_DEPLOY: ${env.SHOULD_PROCEED_STAGE_DEPLOY}"
   echo "STAGE_DEPLOY_REMARKS: ${env.STAGE_DEPLOY_REMARKS}"
 }
 
@@ -599,7 +599,7 @@ def approveProdDeployment() {
         description: 'Remarks'
       ),
       choice(
-        name: 'SHALL_PROCEED_PROD_DEPLOY',
+        name: 'SHOULD_PROCEED_PROD_DEPLOY',
         choices: ['YES', 'NO'],
         description: 'Should we deploy to Production?'
       )
@@ -607,12 +607,12 @@ def approveProdDeployment() {
 
   env.PROD_DEPLOY_APPROVER = inputData.PROD_DEPLOY_APPROVER
   env.PROD_DEPLOY_STATUS = inputData.PROD_DEPLOY_STATUS
-  env.SHALL_PROCEED_PROD_DEPLOY = inputData.SHALL_PROCEED_PROD_DEPLOY
+  env.SHOULD_PROCEED_PROD_DEPLOY = inputData.SHOULD_PROCEED_PROD_DEPLOY
   env.PROD_DEPLOY_REMARKS = inputData.PROD_DEPLOY_REMARKS
 
   echo "PROD_DEPLOY_APPROVER: ${env.PROD_DEPLOY_APPROVER}"
   echo "PROD_DEPLOY_STATUS: ${env.PROD_DEPLOY_STATUS}"
-  echo "SHALL_PROCEED_PROD_DEPLOY: ${env.SHALL_PROCEED_PROD_DEPLOY}"
+  echo "SHOULD_PROCEED_PROD_DEPLOY: ${env.SHOULD_PROCEED_PROD_DEPLOY}"
   echo "PROD_DEPLOY_REMARKS: ${env.PROD_DEPLOY_REMARKS}"
 }
 
