@@ -184,12 +184,12 @@ pipeline {
       }
     }
     stage('Stage Deployment') {
+      agent none
+      when {
+        environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
+      }
       stages {
         stage('Approval') {
-          agent none
-          when {
-            environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-          }
           steps {
             input message: 'Stage Deployment Approval Step',
               ok: 'Click here',
@@ -213,23 +213,17 @@ pipeline {
                 )
               ]
 
-            script {
-              sh 'echo SHALL_PROCEED_STAGE_DEPLOY: ${SHALL_PROCEED_STAGE_DEPLOY}'
-              sh 'echo STAGE_DEPLOY_INPUT: ${STAGE_DEPLOY_INPUT}'
-              sh 'echo STAGE_DEPLOY_APPROVER: ${STAGE_DEPLOY_APPROVER}'
-              sh 'echo DEV_DEPLOY_STATUS: ${DEV_DEPLOY_STATUS}'
-              sh 'echo STAGE_DEPLOY_REMARKS: ${STAGE_DEPLOY_REMARKS}'
+            sh 'echo SHALL_PROCEED_STAGE_DEPLOY: ${SHALL_PROCEED_STAGE_DEPLOY}'
+            sh 'echo STAGE_DEPLOY_INPUT: ${STAGE_DEPLOY_INPUT}'
+            sh 'echo STAGE_DEPLOY_APPROVER: ${STAGE_DEPLOY_APPROVER}'
+            sh 'echo DEV_DEPLOY_STATUS: ${DEV_DEPLOY_STATUS}'
+            sh 'echo STAGE_DEPLOY_REMARKS: ${STAGE_DEPLOY_REMARKS}'
 
-              echo "TODO"
-            }
+            echo "TODO"
           }
         }
         stage('Deploy to Stage') {
           agent any
-          when {
-            beforeAgent true
-            environment name: 'SHALL_PROCEED_STAGE_DEPLOY', value: 'YES'
-          }
           step {
             echo "TODO"
           }
