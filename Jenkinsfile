@@ -186,24 +186,24 @@ pipeline {
             }
           }
         }
-        stage('Deploy to Stage') {
-          agent any
-          input {
-            message 'Stage Deployment Approval Step'
-            ok 'Click here'
-            submitter 'jenkins_admin'
-            submitterParameter 'STAGE_DEPLOY_APPROVER'
-            parameters {
-              choice(name: 'DEV_DEPLOY_STATUS', choices: ['Success', 'Failed. However, Stage deployment can be proceeded.', 'Failed. Stage deployment cannot be proceeded.'], description: 'Status of Dev deployment. Please update the Remarks field if Dev deployment failed.')
-              choice(name: 'SHALL_PROCEED_STAGE_DEPLOY', choices: ['YES', 'NO'], description: 'Should we deploy to Stage?')
-              text(name: 'STAGE_DEPLOY_REMARKS', defaultValue: 'Dev deployment was as expected.\nNo unusual behaviour is noticed.', description: 'Remarks')
-            }
-          }
+      }
+      stages {
+        stage('Approve Stage Deployment') {
+          agent none
           when {
-            beforeAgent true
             environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
           }
           steps {
+            input message: 'Stage Deployment Approval Step',
+              ok: 'Click here',
+              submitter: 'jenkins_admin',
+              submitterParameter: 'STAGE_DEPLOY_APPROVER',
+              parameters: [
+                choice(name: 'DEV_DEPLOY_STATUS', choices: ['Success', 'Failed. However, Stage deployment can be proceeded.', 'Failed. Stage deployment cannot be proceeded.'], description: 'Status of Dev deployment. Please update the Remarks field if Dev deployment failed.')
+                choice(name: 'SHALL_PROCEED_STAGE_DEPLOY', choices: ['YES', 'NO'], description: 'Should we deploy to Stage?')
+                text(name: 'STAGE_DEPLOY_REMARKS', defaultValue: 'Dev deployment was as expected.\nNo unusual behaviour is noticed.', description: 'Remarks')
+              ]
+
             script {
               sh 'echo SHALL_PROCEED_STAGE_DEPLOY: ${SHALL_PROCEED_STAGE_DEPLOY}'
               sh 'echo STAGE_DEPLOY_INPUT: ${STAGE_DEPLOY_INPUT}'
@@ -215,13 +215,24 @@ pipeline {
             }
           }
         }
+        stage('Deploy to Stage') {
+          agent any
+          when {
+            beforeAgent true
+            environment name: 'SHALL_PROCEED_STAGE_DEPLOY', value: 'YES'
+          }
+          step {
+            echo "TODO"
+          }
+        }
+      }
+      stages {
         stage('Deploy to Prod') {
           agent any
           input {
             message 'Should we deploy to Prod?'
           }
           when {
-            beforeAgent true
             environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
           }
           steps {
