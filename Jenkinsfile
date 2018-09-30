@@ -218,14 +218,6 @@ pipeline {
             sh 'echo STAGE_DEPLOY_APPROVER: ${STAGE_DEPLOY_APPROVER}'
             sh 'echo DEV_DEPLOY_STATUS: ${DEV_DEPLOY_STATUS}'
             sh 'echo STAGE_DEPLOY_REMARKS: ${STAGE_DEPLOY_REMARKS}'
-
-            echo "TODO"
-          }
-        }
-        stage('Deploy to Stage') {
-          agent any
-          step {
-            echo "TODO"
           }
         }
       }
