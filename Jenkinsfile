@@ -188,6 +188,9 @@ pipeline {
       when {
         environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
       }
+      options {
+        skipDefaultCheckout()
+      }
       stages {
         stage('Approval') {
           steps {
@@ -211,6 +214,9 @@ pipeline {
       agent none
       when {
         environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
+      }
+      options {
+        skipDefaultCheckout()
       }
       stages {
         stage('Approval') {
