@@ -85,87 +85,87 @@ pipeline {
         }
       }
     }
-    stage('Checkout Source') {
-      agent any
-      stages {
-        stage('Update Release Version') {
-          when {
-            environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-          }
-          steps {
-            script {
-              updatePackageJsonWithReleaseVersion()
-              updateVersionTxtWithReleaseVersion()
-            }
-          }
-        }
-        stage('Install Dependencies') {
-          steps {
-            sh 'sudo docker build -t ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} --target dev_build .'
-            echo "Installed dependencies"
-          }
-        }
-        stage('Lint') {
-          steps {
-            script {
-              try {
-                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm run lint'  
-              } catch(e) {
-                publishLintResults()
-                throw e
-              } finally {
-                publishLintResults()
-              }
-            }
-          }
-        }
-        stage('Test') {
-          steps {
-            script {
-              try {
-                sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm test'  
-              } catch(e) {
-                echo "Test failed"
-                publishTestResults()
-                publishUnitTestCoverageCoberturaReports()
-                throw e
-              } finally {
-                publishTestResults()
-                publishUnitTestCoverageCoberturaReports()
-              }
-              // sh 'docker rmi ${IMAGE_NAME}:dev_build'
-            }
-          }
-        }
-        stage('Tag with Release Version') {
-          when {
-            environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-          }
-          steps {
-            script {
-              gitCommitAndTagWithReleaseVersion()
-            }
-          }
-        }
-        stage('Publish Image') {
-          when {
-            anyOf {
-              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'SNAPSHOT'
-              environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
-            }
-          }
-          steps {
-            script {
-              createPackageArtifactVersion()
-              sh '''
-              sudo docker build -t ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION} --target production .
-              # sudo docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION}
-              '''
-            }
-          }
-        }
-      }
-    }
+    // stage('Checkout Source') {
+    //   agent any
+    //   stages {
+        // stage('Update Release Version') {
+        //   when {
+        //     environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
+        //   }
+        //   steps {
+        //     script {
+        //       updatePackageJsonWithReleaseVersion()
+        //       updateVersionTxtWithReleaseVersion()
+        //     }
+        //   }
+        // }
+        // stage('Install Dependencies') {
+        //   steps {
+        //     sh 'sudo docker build -t ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} --target dev_build .'
+        //     echo "Installed dependencies"
+        //   }
+        // }
+        // stage('Lint') {
+        //   steps {
+        //     script {
+        //       try {
+        //         sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm run lint'  
+        //       } catch(e) {
+        //         publishLintResults()
+        //         throw e
+        //       } finally {
+        //         publishLintResults()
+        //       }
+        //     }
+        //   }
+        // }
+        // stage('Test') {
+        //   steps {
+        //     script {
+        //       try {
+        //         sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm test'  
+        //       } catch(e) {
+        //         echo "Test failed"
+        //         publishTestResults()
+        //         publishUnitTestCoverageCoberturaReports()
+        //         throw e
+        //       } finally {
+        //         publishTestResults()
+        //         publishUnitTestCoverageCoberturaReports()
+        //       }
+        //       // sh 'docker rmi ${IMAGE_NAME}:dev_build'
+        //     }
+        //   }
+        // }
+        // stage('Tag with Release Version') {
+        //   when {
+        //     environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
+        //   }
+        //   steps {
+        //     script {
+        //       gitCommitAndTagWithReleaseVersion()
+        //     }
+        //   }
+        // }
+        // stage('Publish Image') {
+        //   when {
+        //     anyOf {
+        //       environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'SNAPSHOT'
+        //       environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
+        //     }
+        //   }
+        //   steps {
+        //     script {
+        //       createPackageArtifactVersion()
+        //       sh '''
+        //       sudo docker build -t ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION} --target production .
+        //       # sudo docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${PACKAGE_ARTIFACT_VERSION}
+        //       '''
+        //     }
+        //   }
+        // }
+    //   }
+    // }
     stage('Deployment') {
       agent none
       options {
@@ -189,13 +189,26 @@ pipeline {
         stage('Deploy to Stage') {
           agent any
           input {
+            id 'PACKAGE_ARTIFACT_STAGE_DEPLOY_STAGE'
             message 'Should we deploy to Stage?'
+            submitter 'jenkins_admin'
+            submitterParameter 'PACKAGE_ARTIFACT_STAGE_DEPLOY_APPROVER'
+            parameters {
+              choice(name: 'PACKAGE_ARTIFACT_DEV_DEPLOY_STATUS', choices: ['Success', 'Failed. However, Stage deployment can be proceeded.', 'Failed. Stage deployment cannot be proceeded.'], description: 'Status of Dev deployment. Please update the Remarks field if Dev deployment failed. ')
+              text(name: 'PACKAGE_ARTIFACT_STAGE_DEPLOY_REMARKS', defaultValue: 'Dev deployment was as expected.\nNo unusual behaviour is noticed.', description: 'Remarks')
+            }
           }
           when {
             environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
           }
           steps {
             script {
+              sh '''
+              echo 'PACKAGE_ARTIFACT_STAGE_DEPLOY_STAGE: ${PACKAGE_ARTIFACT_STAGE_DEPLOY_STAGE}'
+              echo 'PACKAGE_ARTIFACT_STAGE_DEPLOY_APPROVER: ${PACKAGE_ARTIFACT_STAGE_DEPLOY_APPROVER}'
+              echo 'PACKAGE_ARTIFACT_DEV_DEPLOY_STATUS: ${PACKAGE_ARTIFACT_DEV_DEPLOY_STATUS}'
+              echo 'PACKAGE_ARTIFACT_STAGE_DEPLOY_REMARKS: ${PACKAGE_ARTIFACT_STAGE_DEPLOY_REMARKS}'
+              '''
               echo "TODO"
             }
           }
