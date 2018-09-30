@@ -149,7 +149,7 @@ pipeline {
             }
           }
         }
-        stage('Publish Image') {
+        stage('Publish Artifact') {
           when {
             anyOf {
               environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'SNAPSHOT'
