@@ -200,6 +200,7 @@ pipeline {
             }
           }
           when {
+            beforeAgent true
             environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
           }
           steps {
@@ -220,6 +221,7 @@ pipeline {
             message 'Should we deploy to Prod?'
           }
           when {
+            beforeAgent true
             environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
           }
           steps {
