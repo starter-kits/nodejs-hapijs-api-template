@@ -96,6 +96,7 @@ pipeline {
             script {
               // updatePackageJsonWithReleaseVersion()
               // updateVersionTxtWithReleaseVersion()
+              echo "test"
             }
           }
         }
@@ -144,6 +145,7 @@ pipeline {
           steps {
             script {
               // gitCommitAndTagWithReleaseVersion()
+              echo "test"
             }
           }
         }
