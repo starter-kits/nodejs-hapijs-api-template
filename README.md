@@ -14,6 +14,12 @@
     docker-compose run node-api npm test
     ```
 
+   To launch the Test runner in watch mode (best suited for TDD)
+
+    ```shell
+    docker-compose run node-api npm run test:watch-docker
+    ```
+
 3. To start the Node App in development watch mode in your local machine(inside a docker container):
 
     ```shell

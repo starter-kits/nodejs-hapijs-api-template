@@ -8,6 +8,7 @@
     "lint": "node scripts/lint.js",
     "test": "JEST_JUNIT_OUTPUT=build/reports/test/junit.xml jest --config jest.config.js --color --coverage",
     "test:watch": "JEST_JUNIT_OUTPUT=build/reports/test/junit.xml jest --config jest.config.js --color --watch --verbose=false",
+    "test:watch-docker": "JEST_JUNIT_OUTPUT=build/reports/test/junit.xml jest --config jest.config.js --color --watchAll --verbose=false",
     "start": "node ."
   },
   "engines": {
