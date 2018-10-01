@@ -4,15 +4,21 @@
 
 1. To install NPM dependencies
 
-   ```shell
-   docker-compose build
-   ```
+    ```shell
+    docker-compose build
+    ```
 
-2. To start the Node App in development watch mode in your local machine(inside a docker container):
+2. To launch the Test runner
 
-   ```shell
-   docker-compose up
-   ```
+    ```shell
+    docker-compose run node-api npm test
+    ```
+
+3. To start the Node App in development watch mode in your local machine(inside a docker container):
+
+    ```shell
+    docker-compose up
+    ```
 
 **NOTE:** Docker is required for local development.
 
