@@ -46,7 +46,6 @@ pipeline {
       steps {
         script {
           chooseArtifactType()
-          setEnvVarsIfMasterBranchRelease()
           approveNonMasterBranchReleaseArtifact()
         }
       }
@@ -373,15 +372,13 @@ def chooseArtifactType() {
   echo "PACKAGE_ARTIFACT_TYPE_APPROVER: ${env.PACKAGE_ARTIFACT_TYPE_APPROVER}"
 }
 
-def setEnvVarsIfMasterBranchRelease() {
+def approveNonMasterBranchReleaseArtifact() {
   // By default, Release Artifacts can be created from master/main protected branch
-  // Non-master branch release artifacts can be created for special cases (eg: Hot fix release)
+  // Non-master branch release artifacts can be created for special cases (eg: Hot fix release, possible rollback etc)
   if(env.PACKAGE_ARTIFACT_TYPE == "RELEASE" && env.PACKAGE_ARTIFACT_GIT_BRANCH == env.GIT_MAIN_PROTECTED_BRANCH) {
     env.PACKAGE_ARTIFACT_IS_NON_MASTER_RELEASE = 'NO'
   }
-}
 
-def approveNonMasterBranchReleaseArtifact() {
   if(env.PACKAGE_ARTIFACT_TYPE == "RELEASE" && env.PACKAGE_ARTIFACT_GIT_BRANCH != env.GIT_MAIN_PROTECTED_BRANCH) {
     getNonMasterBranchReleaseArtifactApproval()
   }
