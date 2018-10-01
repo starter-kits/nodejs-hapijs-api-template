@@ -4,7 +4,7 @@ pipeline {
     booleanParam(
       name: 'SHOULD_FORCE_PUBLISH_ARTIFACT',
       defaultValue: false,
-      description: '📦 Artifact will be published if CI job runs in master branch.\nIf you want to publish artifact from other branches, please force it.'
+      description: '📦 Artifact will be published if build runs in master branch.\nIf you want to publish artifact from other branches, please force it.'
     )
   }
   environment {
