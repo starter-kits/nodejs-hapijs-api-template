@@ -60,7 +60,7 @@ There are two type of builds:
 
 Static Analysis and Unit tests will be executed in a CI Build to ensure the quality of the application.
 
-**How to trigger a `CI Build`?**
+##### How to trigger a `CI Build`?
 
 _For non-master branches:_
 
@@ -76,7 +76,7 @@ _For master branch:_
 
 An artifact can be created and deployed by a `CI/CD Build`
 
-**How to trigger a `CI/CD Build`?**
+##### How to trigger a `CI/CD Build`?
 
 _For master branch:_
 
@@ -86,18 +86,18 @@ _For non-master branches:_
 
 `CI/CD Build` will be triggered on `non-master branches` if you select `SHOULD_FORCE_PUBLISH_ARTIFACT` option.
 
-**How to choose an Artifact type in a `CI/CD Build`?**
+##### How to choose an Artifact type in a `CI/CD Build`?
 
 - `Snapshot Artifact` 📦🔗 will be created if choose `SNAPSHOT` option in the `Choose Artifact Type` stage.
 - `Release Artifact` 📦🔖 will be created if choose `RELEASE` option in the `Choose Artifact Type` stage.
 
 
-**How to deploy only to Dev Server from non-master branch?**
+##### How to deploy only to Dev Server from non-master branch?
 
 1. There is an option to create Artifact from a non-master branch by selecting `SHOULD_FORCE_PUBLISH_ARTIFACT` 📦 option in Jenkins Pipeline.
 2. Select `Snapshot Artifact` 📦🔗 type to deploy only in Dev Server in the `Choose Artifact Type` stage.
 
-**How to make a Hotfix Release from non-master branch?**
+##### How to make a Hotfix Release from non-master branch?
 
 1. Select `Release Artifact` 📦🔖 type in the `Choose Artifact Type` stage
 2. Then select `PATCH` version type to start a Hotfix release. 
