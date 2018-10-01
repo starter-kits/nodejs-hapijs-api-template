@@ -103,7 +103,7 @@ pipeline {
         stage('Install Dependencies') {
           steps {
             script {
-              installDependencies()
+              buildDockerAndRunNpmInstall()
             }
             echo "Installed dependencies"
           }
@@ -111,14 +111,14 @@ pipeline {
         stage('Lint') {
           steps {
             script {
-              lint()
+              runDockerAndRunNpmLint()
             }
           }
         }
         stage('Test') {
           steps {
             script {
-              test()
+              runDockerAndRunNpmTest()
             }
           }
         }
@@ -314,7 +314,7 @@ def setEnvironmentVariablesFromVersionTxt() {
   echo "PACKAGE_ARTIFACT_PREVIOUS_VERSION: ${env.PACKAGE_ARTIFACT_PREVIOUS_VERSION}"
 }
 
-def installDependencies() {
+def buildDockerAndRunNpmInstall() {
   sh 'sudo docker build -t ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} --target dev_build .'
 }
 
@@ -322,7 +322,7 @@ def publishLintResults(reportPathPattern = '**/reports/lint/eslint.xml') {
   checkstyle failedTotalAll: '0', canComputeNew: false, defaultEncoding: '', healthy: '', pattern: reportPathPattern, unHealthy: ''
 }
 
-def lint() {
+def runDockerAndRunNpmLint() {
   try {
     sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm run lint'  
   } catch(e) {
@@ -337,7 +337,7 @@ def publishTestResults(reportPathPattern = '**/reports/test/junit.xml') {
   junit reportPathPattern
 }
 
-def test() {
+def runDockerAndRunNpmTest() {
   try {
     sh 'sudo docker run -v ${WORKSPACE}/build:/opt/app/build ${IMAGE_NAME}:dev_build_${PACKAGE_ARTIFACT_GIT_BRANCH} npm test'  
   } catch(e) {
