@@ -50,7 +50,7 @@ pipeline {
         }
       }
     }
-    stage('Approve Non-master branch Release Artifact') {
+    stage('⚠️ Approve Non-master branch Release Artifact') {
       when {
         environment name: 'PACKAGE_ARTIFACT_TYPE', value: 'RELEASE'
         not {
